@@ -23,6 +23,9 @@ public class Reservation {
     private Long leader_id;
 
     @Column(nullable = false)
+    private String room_name;
+
+    @Column(nullable = false)
     private String location;
 
     @Column(nullable = false)
@@ -35,8 +38,9 @@ public class Reservation {
     private Time endTime;
 
     @Builder
-    public Reservation(Long leader_id, String location, Date date, Time startTime, Time endTime) {
+    public Reservation(Long leader_id, String room_name, String location, Date date, Time startTime, Time endTime) {
         this.leader_id = leader_id;
+        this.room_name = room_name;
         this.location = location;
         this.date = date;
         this.startTime = startTime;

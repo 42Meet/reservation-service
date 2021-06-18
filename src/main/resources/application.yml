@@ -1,10 +1,7 @@
 spring:
-  datasource:
-    url: jdbc:mariadb://15.164.85.227:3306/reservation-service
-    username: 42meet
-    password: 1q2w3e4r
-    driver-class-name: org.mariadb.jdbc.Driver
   jpa:
     hibernate:
       ddl-auto: none
     show-sql: true
+  profiles:
+    include: credential

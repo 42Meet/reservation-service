@@ -6,4 +6,5 @@ spring:
     driver-class-name: org.mariadb.jdbc.Driver
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: none
+    show-sql: true

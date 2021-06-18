@@ -7,7 +7,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.sql.Date;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 
 @RequiredArgsConstructor
@@ -28,5 +32,17 @@ public class ReservationService {
         reservationRepository.delete(reserve);
     }
 
-
+    @Transactional
+    public List<Reservation> findAllReservationByParam(Map<String, String> paramMap) {
+        if (paramMap.containsKey("date") && paramMap.containsKey("roomName")) {
+            return reservationRepository.findByDateAndRoomName(Date.valueOf(paramMap.get("date")), paramMap.get("roomName"));
+        }
+        else if (paramMap.containsKey("date") && paramMap.containsKey("location")) {
+            return reservationRepository.findByDateAndLocationOrderByStartTimeAsc(Date.valueOf(paramMap.get("date")), paramMap.get("location"));
+        }
+        else if (paramMap.containsKey("date")) {
+            return reservationRepository.findByDate(Date.valueOf(paramMap.get("date")));
+        }
+        return new ArrayList<Reservation>();
+    }
 }

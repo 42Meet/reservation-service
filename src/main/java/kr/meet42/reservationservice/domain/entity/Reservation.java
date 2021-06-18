@@ -19,11 +19,11 @@ public class Reservation {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private Long leader_id;
+    @Column(name = "leader_name", nullable = false)
+    private String leaderName;
 
-    @Column(nullable = false)
-    private String room_name;
+    @Column(name = "room_name", nullable = false)
+    private String roomName;
 
     @Column(nullable = false)
     private String location;
@@ -31,16 +31,16 @@ public class Reservation {
     @Column(nullable = false)
     private Date date;
 
-    @Column(nullable = false)
+    @Column(name = "start_time", nullable = false)
     private Time startTime;
 
-    @Column(nullable = false)
+    @Column(name = "end_time", nullable = false)
     private Time endTime;
 
     @Builder
-    public Reservation(Long leader_id, String room_name, String location, Date date, Time startTime, Time endTime) {
-        this.leader_id = leader_id;
-        this.room_name = room_name;
+    public Reservation(String leaderName, String roomName, String location, Date date, Time startTime, Time endTime) {
+        this.leaderName = leaderName;
+        this.roomName = roomName;
         this.location = location;
         this.date = date;
         this.startTime = startTime;

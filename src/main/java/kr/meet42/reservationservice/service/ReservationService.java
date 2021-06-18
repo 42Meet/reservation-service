@@ -7,8 +7,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.text.SimpleDateFormat;
 
-import static org.graalvm.compiler.nodeinfo.Verbosity.Id;
 
 @RequiredArgsConstructor
 @Service
@@ -17,7 +17,8 @@ public class ReservationService {
 
     @Transactional
     public Long save(ReservationSaveRequestDto requestDto) {
-        return reservationRepository.save(requestDto.toEntity()).getId();
+//        System.out.println("requestDto = " + requestDto.getDate().toString());
+        return reservationRepository.save(requestDto.toReservationEntity()).getId();
     }
 
     @Transactional

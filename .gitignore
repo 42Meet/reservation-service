@@ -35,6 +35,5 @@ out/
 
 ### VS Code ###
 .vscode/
-
 ### Security
 application-credential.yml

@@ -50,13 +50,19 @@ public class ReservationSaveRequestDto {
         this.members = members;
     }
 
-//    public Member toMemberEntity() {
-//
-//    }
-//
-//    public Participate toParticipateEntity() {
-//
-//    }
+
+    public Participate toParticipateEntity(Reservation reservation, Member member){
+        return Participate.builder()
+                .reservation(reservation)
+                .member(member)
+                .build();
+    }
+
+    public Member toMemberEntity(String intra) {
+        return Member.builder()
+                .intra(intra)
+                .build();
+    }
 
     public Reservation toReservationEntity() {
         return Reservation.builder()

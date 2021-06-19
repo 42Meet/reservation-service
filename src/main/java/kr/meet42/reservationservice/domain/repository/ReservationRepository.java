@@ -8,8 +8,12 @@ import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 
+import java.sql.Date;
+import java.util.List;
+
 public interface ReservationRepository extends JpaRepository<Reservation, Long> {
     List<Reservation> findByDateAndLocationOrderByStartTimeAsc(Date date, String location);
     List<Reservation> findByDateAndRoomNameOrderByStartTimeAsc(Date date, String room_name);
     List<Reservation> findByDateOrderByStartTimeAsc(Date date);
+    List<Reservation> findByRoomNameAndDate(String roomName, Date date);
 }

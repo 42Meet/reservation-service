@@ -13,7 +13,7 @@ import java.util.List;
 
 public interface ReservationRepository extends JpaRepository<Reservation, Long> {
     List<Reservation> findByDateAndLocationOrderByStartTimeAsc(Date date, String location);
-    List<Reservation> findByDateAndRoomName(Date date, String room_name);
-    List<Reservation> findByDate(Date date);
+    List<Reservation> findByDateAndRoomNameOrderByStartTimeAsc(Date date, String room_name);
+    List<Reservation> findByDateOrderByStartTimeAsc(Date date);
     List<Reservation> findByRoomNameAndDate(String roomName, Date date);
 }

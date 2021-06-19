@@ -40,13 +40,13 @@ public class ReservationService {
     @Transactional
     public List<Reservation> findAllReservationByParam(Map<String, String> paramMap) {
         if (paramMap.containsKey("date") && paramMap.containsKey("roomName")) {
-            return reservationRepository.findByDateAndRoomName(Date.valueOf(paramMap.get("date")), paramMap.get("roomName"));
+            return reservationRepository.findByDateAndRoomNameOrderByStartTimeAsc(Date.valueOf(paramMap.get("date")), paramMap.get("roomName"));
         }
         else if (paramMap.containsKey("date") && paramMap.containsKey("location")) {
             return reservationRepository.findByDateAndLocationOrderByStartTimeAsc(Date.valueOf(paramMap.get("date")), paramMap.get("location"));
         }
         else if (paramMap.containsKey("date")) {
-            return reservationRepository.findByDate(Date.valueOf(paramMap.get("date")));
+            return reservationRepository.findByDateOrderByStartTimeAsc(Date.valueOf(paramMap.get("date")));
         }
         return new ArrayList<Reservation>();
     }

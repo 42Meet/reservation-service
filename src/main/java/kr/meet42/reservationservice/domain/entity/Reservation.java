@@ -19,8 +19,8 @@ public class Reservation {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private Long leader_id;
+    @Column(name = "leader_name", nullable = false)
+    private String leaderName;
 
     @Column(name = "room_name", nullable = false) // name을 지정해서 findby~에 매핑될수있도록함
     private String roomName;
@@ -31,15 +31,15 @@ public class Reservation {
     @Column(nullable = false)
     private Date date;
 
-    @Column(nullable = false)
+    @Column(name = "start_time", nullable = false)
     private Time startTime;
 
-    @Column(nullable = false)
+    @Column(name = "end_time", nullable = false)
     private Time endTime;
 
     @Builder
-    public Reservation(Long leader_id, String roomName, String location, Date date, Time startTime, Time endTime) {
-        this.leader_id = leader_id;
+    public Reservation(String leaderName, String roomName, String location, Date date, Time startTime, Time endTime) {
+        this.leaderName = leaderName;
         this.roomName = roomName;
         this.location = location;
         this.date = date;

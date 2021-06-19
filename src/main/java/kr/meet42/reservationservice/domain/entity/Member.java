@@ -4,19 +4,20 @@ import lombok.*;
 
 import javax.persistence.*;
 
-@Entity
-@Getter @Setter
+@Getter
+@Setter
 @NoArgsConstructor
+@Entity
 public class Member {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long member_id;
 
     @Column(nullable = false)
     private String intra;
 
     @Builder
-    public Member(Long member_id, String intra) {
-        this.member_id = member_id;
+    public Member(String intra) {
         this.intra = intra;
     }
 }

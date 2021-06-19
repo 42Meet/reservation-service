@@ -22,8 +22,8 @@ public class Reservation {
     @Column(nullable = false)
     private Long leader_id;
 
-    @Column(nullable = false)
-    private String room_name;
+    @Column(name = "room_name", nullable = false) // name을 지정해서 findby~에 매핑될수있도록함
+    private String roomName;
 
     @Column(nullable = false)
     private String location;
@@ -38,9 +38,9 @@ public class Reservation {
     private Time endTime;
 
     @Builder
-    public Reservation(Long leader_id, String room_name, String location, Date date, Time startTime, Time endTime) {
+    public Reservation(Long leader_id, String roomName, String location, Date date, Time startTime, Time endTime) {
         this.leader_id = leader_id;
-        this.room_name = room_name;
+        this.roomName = roomName;
         this.location = location;
         this.date = date;
         this.startTime = startTime;

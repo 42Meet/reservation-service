@@ -22,7 +22,7 @@ public class Reservation {
     @Column(name = "leader_name", nullable = false)
     private String leaderName;
 
-    @Column(name = "room_name", nullable = false)
+    @Column(name = "room_name", nullable = false) // name을 지정해서 findby~에 매핑될수있도록함
     private String roomName;
 
     @Column(nullable = false)

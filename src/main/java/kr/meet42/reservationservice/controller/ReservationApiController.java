@@ -19,12 +19,12 @@ import java.util.ArrayList;
 public class ReservationApiController {
     private final ReservationService reservationService;
     @PostMapping("/new")
-    public void save(@RequestBody ReservationSaveRequestDto requestDto) {
+    public void register(@RequestBody ReservationSaveRequestDto requestDto) {
 //        System.out.println("requestDto = " + requestDto.getMember());
         //        System.out.println("requestDto.getMember().get(0) = " + requestDto.getMember().get(0));
         ArrayList<String> members = requestDto.getMembers();
-        System.out.println("requestDto = " + members.get(0));
-        reservationService.save(requestDto);
+        Long leader_id;
+        leader_id = reservationService.save(requestDto);
     }
 //
 //    @GetMapping("/v1/reservation/new")

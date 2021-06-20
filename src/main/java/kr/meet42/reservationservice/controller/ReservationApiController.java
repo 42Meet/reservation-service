@@ -1,5 +1,6 @@
 package kr.meet42.reservationservice.controller;
 
+import kr.meet42.reservationservice.domain.entity.Reservation;
 import kr.meet42.reservationservice.service.ReservationService;
 import kr.meet42.reservationservice.web.dto.ReservationSaveRequestDto;
 import lombok.RequiredArgsConstructor;
@@ -13,24 +14,30 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @RequiredArgsConstructor
 @RestController
 public class ReservationApiController {
+
     private final ReservationService reservationService;
+
     @PostMapping("/new")
-    public void save(@RequestBody ReservationSaveRequestDto requestDto) {
+    public void register(@RequestBody ReservationSaveRequestDto requestDto) {
 //        System.out.println("requestDto = " + requestDto.getMember());
         //        System.out.println("requestDto.getMember().get(0) = " + requestDto.getMember().get(0));
         ArrayList<String> members = requestDto.getMembers();
-        System.out.println("requestDto = " + members.get(0));
-        reservationService.save(requestDto);
+        Long leader_id;
+        leader_id = reservationService.save(requestDto);
     }
-//
-//    @GetMapping("/v1/reservation/new")
-//    public Long save(HttpServletRequest request, HttpServletResponse response) {
-//        System.out.println("request = " + request);
-//        //reservationService.save(requestDto);
-//        return 1L;
-//    }
+
+    @GetMapping("/list")
+    public List<Reservation> findAll(HttpServletRequest request, HttpServletResponse response) {
+        Map<String, String> paramMap = new HashMap<>();
+        request.getParameterNames().asIterator()
+                .forEachRemaining(paramName -> paramMap.put(paramName, request.getParameter(paramName)));
+        return reservationService.findAllReservationByParam(paramMap);
+    }
 }

@@ -13,7 +13,7 @@
    ```
    docker build -t nonalias/reservation-service:1.0 .
    ```
-   * ***M1 운영체제일 경우***
+   * ***OSX M1의 경우***
        * `docker build --platform=unix/amd64 -t nonalias/reservation-service:1.0`
 
 3. Container 실행

@@ -53,17 +53,31 @@ public class ReservationService {
     public List<Reservation> findMyReservation(HttpServletRequest request) {
 
         List<Reservation> reservations = new ArrayList<Reservation>();
+        String intra = "sebaek";
+        List<Member> members = memberRepository.findByIntra(intra);
+            Member member = members.get(1);
+        System.out.println("member = " + member.getIntra());
+            Participate participate = participateRepository.findByMember(member);
+        String leaderName = participate.getReservation().getLeaderName();
+        System.out.println("leaderName = " + leaderName);
+//        return reservationRepository.findByParticipateAndStatusOrderByDateAscStartTimeAsc(participate, true);
+//        return reservationRepository.findByParticipateOrderByDateAscStartTimeAsc(participate);
+//        return reservationRepository.findByParticipate(participate);
+        return reservationRepository.findAllById(participate.getReservation().getId());
+
+
         // TODO: 토큰으로부터 intraName받아오기
 //        String jwt = request.getHeader("access-token");
 //        String intra = jwtUtil.validateAndExtract(jwt);
 //        System.out.println("intra = " + intra);
-        String intra = "sebaek";
-        List<Member> members = memberRepository.findByIntra(intra);
-        for (Iterator<Member> iter = members.iterator(); iter.hasNext(); ) {
-            Member member = iter.next();
-            reservations.add(participateRepository.findByMember(member).getReservation());
-        }
-        return reservations;
+        //String intra = "sebaek";
+//        List<Member> members = memberRepository.findByIntra(intra);
+//        for (Iterator<Member> iter = members.iterator(); iter.hasNext(); ) {
+//            Member member = iter.next();
+//            reservations.add(participateRepository.findByMember(member).getReservation());
+//        }
+
+//        return reservations;
     }
 
     @Transactional

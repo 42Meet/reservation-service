@@ -55,8 +55,11 @@ public class Reservation {
     @Column(name = "content", nullable = false)
     private String content;
 
+    @OneToMany(fetch = FetchType.EAGER)
+    private List<Participate> participate;
+
     @Builder
-    public Reservation(String leaderName, String roomName, String location, Date date, Time startTime, Time endTime, String department, String purpose, String title, String content, Boolean status) {
+    public Reservation(String leaderName, String roomName, String location, Date date, Time startTime, Time endTime, String department, String purpose, String title, Boolean status, String content, List<Participate> participate) {
         this.leaderName = leaderName;
         this.roomName = roomName;
         this.location = location;
@@ -66,7 +69,8 @@ public class Reservation {
         this.department = department;
         this.purpose = purpose;
         this.title = title;
-        this.content = content;
         this.status = status;
+        this.content = content;
+        this.participate = participate;
     }
 }

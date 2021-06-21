@@ -31,7 +31,7 @@ public class ReservationSaveRequestDto {
     private String department;
     private String purpose;
     private String title;
-    private Boolean status;
+    private Long status;
     private String content;
 
 
@@ -50,7 +50,7 @@ public class ReservationSaveRequestDto {
 //                3: "esim"
 
     @Builder
-    public ReservationSaveRequestDto(String location, String roomName, String date, String startTime, String endTime, String leaderName, ArrayList<String> members, String department, String purpose, String title, Boolean status, String content) {
+    public ReservationSaveRequestDto(String location, String roomName, String date, String startTime, String endTime, String leaderName, ArrayList<String> members, String department, String purpose, String title, Long status, String content) {
         this.location = location;
         this.roomName = roomName;
         this.date = date;

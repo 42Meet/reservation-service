@@ -36,7 +36,7 @@ public class ReservationService {
         Reservation reservation;
 
         if (isValid(requestDto)) {
-            requestDto.setStatus(true);
+            requestDto.setStatus(1L);
             reservation = reservationRepository.save(requestDto.toReservationEntity());
             requestDto.getMembers().add(requestDto.getLeaderName());
             for (Iterator<String> iter = requestDto.getMembers().iterator(); iter.hasNext(); ) {
@@ -50,20 +50,72 @@ public class ReservationService {
     }
 
     @Transactional // Question: 여기서 Transactional이 필요한가? 그냥 조횐데?
-    public List<Reservation> findMyReservation(HttpServletRequest request) {
+    public List<List<Reservation>> findMyReservation(HttpServletRequest request) {
+        List<List<Reservation>> res = new ArrayList<>(new ArrayList<>());
+        List<Reservation> proc = new ArrayList<Reservation>();
+        List<Reservation> end = new ArrayList<>();
+        List<Reservation> sche = new ArrayList<>();
+        String intra = "sebaek";
+        List<Member> members = memberRepository.findByIntra(intra);
+        for (Iterator<Member> iter = members.iterator(); iter.hasNext();) {
+            Member member = iter.next();
+            Participate participate = participateRepository.findByMember(member);
+            Optional<Reservation> procReservation = reservationRepository.findByIdAndStatus(participate.getReservation().getId(), 1L);
+            if (procReservation.isPresent())
+                proc.add(procReservation.get());
+            Optional<Reservation> endReservation = reservationRepository.findByIdAndStatus(participate.getReservation().getId(), 0L);
+            if (endReservation.isPresent())
+                end.add(endReservation.get());
+            Optional<Reservation> scheReservation = reservationRepository.findByIdAndStatus(participate.getReservation().getId(), 2L);
+            if (scheReservation.isPresent())
+                sche.add(scheReservation.get());
+        }
 
-        List<Reservation> reservations = new ArrayList<Reservation>();
+        Collections.sort(proc, new Comparator<Reservation>() {
+            @Override
+            public int compare(Reservation b1, Reservation b2) {
+                if (b1.getDate().compareTo(b2.getDate()) == 0) {
+                    return b1.getStartTime().compareTo(b2.getStartTime());
+                } else
+                    return b1.getDate().compareTo(b2.getDate());
+            }
+        });
+        Collections.sort(sche, new Comparator<Reservation>() {
+            @Override
+            public int compare(Reservation b1, Reservation b2) {
+                if (b1.getDate().compareTo(b2.getDate()) == 0) {
+                    return b1.getStartTime().compareTo(b2.getStartTime());
+                } else
+                    return b1.getDate().compareTo(b2.getDate());
+            }
+        });
+        Collections.sort(end, new Comparator<Reservation>() {
+            @Override
+            public int compare(Reservation b1, Reservation b2) {
+                if (b1.getDate().compareTo(b2.getDate()) == 0) {
+                    return b2.getStartTime().compareTo(b1.getStartTime());
+                } else
+                    return b2.getDate().compareTo(b1.getDate());
+            }
+        });
+        res.add(proc);
+        res.add(sche);
+        res.add(end);
+        return res;
+
+
         // TODO: 토큰으로부터 intraName받아오기
 //        String jwt = request.getHeader("access-token");
 //        String intra = jwtUtil.validateAndExtract(jwt);
 //        System.out.println("intra = " + intra);
-        String intra = "sebaek";
-        List<Member> members = memberRepository.findByIntra(intra);
-        for (Iterator<Member> iter = members.iterator(); iter.hasNext(); ) {
-            Member member = iter.next();
-            reservations.add(participateRepository.findByMember(member).getReservation());
-        }
-        return reservations;
+        //String intra = "sebaek";
+//        List<Member> members = memberRepository.findByIntra(intra);
+//        for (Iterator<Member> iter = members.iterator(); iter.hasNext(); ) {
+//            Member member = iter.next();
+//            reservations.add(participateRepository.findByMember(member).getReservation());
+//        }
+
+//        return reservations;
     }
 
     @Transactional

@@ -49,7 +49,7 @@ public class ReservationApiController {
     }
 
     @GetMapping("/mypage")
-    public List<Reservation> myReservation(HttpServletRequest request, HttpServletResponse response) {
+    public List<List<Reservation>> myReservation(HttpServletRequest request, HttpServletResponse response) {
         return reservationService.findMyReservation(request);
     }
 

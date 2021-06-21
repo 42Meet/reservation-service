@@ -50,7 +50,7 @@ public class Reservation {
     private String title;
 
     @Column(name = "status", nullable = false)
-    private Boolean status;
+    private Long status;
 
     @Column(name = "content", nullable = false)
     private String content;
@@ -59,7 +59,7 @@ public class Reservation {
     private List<Participate> participate;
 
     @Builder
-    public Reservation(String leaderName, String roomName, String location, Date date, Time startTime, Time endTime, String department, String purpose, String title, Boolean status, String content, List<Participate> participate) {
+    public Reservation(String leaderName, String roomName, String location, Date date, Time startTime, Time endTime, String department, String purpose, String title, Long status, String content, List<Participate> participate) {
         this.leaderName = leaderName;
         this.roomName = roomName;
         this.location = location;

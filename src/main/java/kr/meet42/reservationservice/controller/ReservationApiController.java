@@ -3,9 +3,10 @@ package kr.meet42.reservationservice.controller;
 import kr.meet42.reservationservice.domain.entity.Reservation;
 import kr.meet42.reservationservice.service.ReservationService;
 import kr.meet42.reservationservice.web.dto.ReservationSaveRequestDto;
+import kr.meet42.reservationservice.web.dto.ReservationDeleteRequestDto;
 import lombok.RequiredArgsConstructor;
-import org.json.JSONArray;
-import org.springframework.stereotype.Controller;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -26,20 +27,25 @@ public class ReservationApiController {
 
     @PostMapping("/new")
     public void register(@RequestBody ReservationSaveRequestDto requestDto) {
-//        System.out.println("requestDto = " + requestDto.getMember());
-        //        System.out.println("requestDto.getMember().get(0) = " + requestDto.getMember().get(0));
         ArrayList<String> members = requestDto.getMembers();
-        // Long leader_id;
         boolean result;
         result = reservationService.save(requestDto);
         System.out.println("result = " + result);
     }
 
     @GetMapping("/list")
-    public List<Reservation> findAll(HttpServletRequest request, HttpServletResponse response) {
+    public ResponseEntity<List<Reservation>> findAll(HttpServletRequest request, HttpServletResponse response) {
         Map<String, String> paramMap = new HashMap<>();
         request.getParameterNames().asIterator()
                 .forEachRemaining(paramName -> paramMap.put(paramName, request.getParameter(paramName)));
-        return reservationService.findAllReservationByParam(paramMap);
+//        return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(reservationService.findAllReservationByParam(paramMap), HttpStatus.OK);
+    }
+
+    @PostMapping("delete")
+    public ResponseEntity<?> delete(@RequestBody ReservationDeleteRequestDto requestDto, HttpServletRequest request, HttpServletResponse response) {
+        String jwt = request.getHeader("jwt");
+        requestDto.setJwt(jwt);
+        return reservationService.delete(requestDto);
     }
 }

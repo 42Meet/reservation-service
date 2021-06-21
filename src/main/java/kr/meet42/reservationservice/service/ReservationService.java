@@ -1,21 +1,22 @@
 package kr.meet42.reservationservice.service;
 
+import com.sun.xml.bind.v2.TODO;
 import kr.meet42.reservationservice.domain.entity.Member;
+import kr.meet42.reservationservice.domain.entity.Participate;
 import kr.meet42.reservationservice.domain.entity.Reservation;
 import kr.meet42.reservationservice.domain.repository.MemberRepository;
 import kr.meet42.reservationservice.domain.repository.ParticipateRepository;
 import kr.meet42.reservationservice.domain.repository.ReservationRepository;
 import kr.meet42.reservationservice.web.dto.ReservationSaveRequestDto;
+import kr.meet42.reservationservice.web.dto.ReservationDeleteRequestDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.sql.Date;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.sql.Time;
 import java.util.Iterator;
 
@@ -33,7 +34,7 @@ public class ReservationService {
 
         if (isValid(requestDto)) {
             reservation = reservationRepository.save(requestDto.toReservationEntity());
-            memberRepository.save(requestDto.toMemberEntity(requestDto.getLeaderName()));
+            requestDto.getMembers().add(requestDto.getLeaderName());
             for (Iterator<String> iter = requestDto.getMembers().iterator(); iter.hasNext(); ) {
                 Member member = requestDto.toMemberEntity(iter.next());
                 memberRepository.save(member);
@@ -46,10 +47,22 @@ public class ReservationService {
 
 
     @Transactional
-    public void delete (Long id) {
-        Reservation reserve = reservationRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("해당 예약 내역이 없습니다. 예약id="+id));
-        reservationRepository.delete(reserve);
+    public ResponseEntity<?> delete (ReservationDeleteRequestDto dto) {
+//        Reservation reserve = reservationRepository.findById(dto.getId())
+//                .orElseThrow(() -> new IllegalArgumentException("해당 예약 내역이 없습니다. 예약id="+ dto.getId()));
+        Optional<Reservation> finded = reservationRepository.findById(dto.getId());
+        if (finded.isEmpty())
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        else {
+            // TODO : JWT 연결 되면 주석 풀어서 leader만 삭제할 수 있도록 수정
+//            if (dto.getJwt() != finded.get().getLeaderName())
+//                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            List<Participate> parti = participateRepository.findByReservation(finded.get());
+            for (Iterator<Participate> iter = parti.iterator(); iter.hasNext();) {
+                participateRepository.delete(iter.next());
+            }
+            return new ResponseEntity<>(HttpStatus.OK);
+        }
     }
 
     @Transactional

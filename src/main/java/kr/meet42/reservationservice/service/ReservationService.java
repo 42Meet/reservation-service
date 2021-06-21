@@ -15,6 +15,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.EntityTransaction;
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 import java.sql.Date;
@@ -30,6 +33,7 @@ public class ReservationService {
     private final MemberRepository memberRepository;
     private final ParticipateRepository participateRepository;
     private final JWTUtil jwtUtil;
+    private final EntityManagerFactory entityManagerFactory;
 
     @Transactional
     public ResponseEntity<?> save(ReservationSaveRequestDto requestDto) {
@@ -60,6 +64,7 @@ public class ReservationService {
         for (Iterator<Member> iter = members.iterator(); iter.hasNext();) {
             Member member = iter.next();
             Participate participate = participateRepository.findByMember(member);
+            setReservationStatus(participate);
             Optional<Reservation> procReservation = reservationRepository.findByIdAndStatus(participate.getReservation().getId(), 1L);
             if (procReservation.isPresent())
                 proc.add(procReservation.get());
@@ -77,6 +82,28 @@ public class ReservationService {
         res.add(sche);
         res.add(end);
         return res;
+    }
+
+    @org.springframework.transaction.annotation.Transactional
+    public void setReservationStatus(Participate participate) {
+        Reservation target = participate.getReservation();
+        if (target.getDate().compareTo(Calendar.getInstance().getTime()) == 0) {
+            // 시작시간이 현재시간보다 크다면
+            if (target.getStartTime().compareTo(Calendar.getInstance().getTime()) > 0) {
+                target.setStatus(2L);
+            }
+            // 사이에 있으면
+            else if (target.getStartTime().compareTo(Calendar.getInstance().getTime()) < 0
+                    && target.getEndTime().compareTo(Calendar.getInstance().getTime()) > 0)
+                target.setStatus(1L);
+            else
+                target.setStatus(0L);
+        }
+        // 더 늦으면 즉, 예정되어있으면
+        else if (target.getDate().compareTo(Calendar.getInstance().getTime()) > 0)
+            target.setStatus(2L);
+        else
+            target.setStatus(0L);
     }
 
     private void listAscSort(List<Reservation> list) {

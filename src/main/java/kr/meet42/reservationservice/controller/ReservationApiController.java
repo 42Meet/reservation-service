@@ -1,7 +1,9 @@
 package kr.meet42.reservationservice.controller;
 
 import kr.meet42.reservationservice.domain.entity.Reservation;
+import kr.meet42.reservationservice.service.AdminService;
 import kr.meet42.reservationservice.service.ReservationService;
+import kr.meet42.reservationservice.web.dto.AdminListUpRequestDto;
 import kr.meet42.reservationservice.web.dto.ReservationSaveRequestDto;
 import kr.meet42.reservationservice.web.dto.ReservationDeleteRequestDto;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +26,7 @@ import java.util.Map;
 public class ReservationApiController {
 
     private final ReservationService reservationService;
+    private final AdminService adminService;
 
     @PostMapping("/new")
     public ResponseEntity<?> register(@RequestBody ReservationSaveRequestDto requestDto) {
@@ -48,6 +51,12 @@ public class ReservationApiController {
     @GetMapping("/mypage")
     public List<Reservation> myReservation(HttpServletRequest request, HttpServletResponse response) {
         return reservationService.findMyReservation(request);
+    }
+
+    @GetMapping("/room")
+    public List<AdminListUpRequestDto> listUp(HttpServletRequest request, HttpServletResponse response) {
+        //adminService.saveRoomList();
+        return adminService.findAllRooms();
     }
 
 }

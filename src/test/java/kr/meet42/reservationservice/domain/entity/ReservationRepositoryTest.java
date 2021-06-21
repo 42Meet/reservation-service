@@ -23,7 +23,7 @@ public class ReservationRepositoryTest {
 
     @Test
     public void 예약저장_불러오기() {
-        Long leader_id = 124125L;
+        String leaderName = "sebaek";
         String location = "개포";
         Date date = Date.valueOf("2021-06-18");
         Time startTime = Time.valueOf("01:00:00");
@@ -31,7 +31,7 @@ public class ReservationRepositoryTest {
         String roomName = "창경궁";
 
         reservationRepository.save(Reservation.builder()
-                .leader_id(leader_id)
+                .leaderName(leaderName)
                 .roomName(roomName)
                 .location(location)
                 .date(date)
@@ -42,7 +42,7 @@ public class ReservationRepositoryTest {
         List<Reservation> ReservationList = reservationRepository.findAll();
 
         Reservation reserve = ReservationList.get(0);
-        assertThat(reserve.getLeader_id()).isEqualTo(124125L);
+        assertThat(reserve.getLeaderName()).isEqualTo("sebaek");
         assertThat(reserve.getLocation()).isEqualTo("개포");
     }
 

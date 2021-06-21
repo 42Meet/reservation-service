@@ -33,6 +33,7 @@ public class ReservationService {
 
         if (isValid(requestDto)) {
             reservation = reservationRepository.save(requestDto.toReservationEntity());
+            memberRepository.save(requestDto.toMemberEntity(requestDto.getLeaderName()));
             for (Iterator<String> iter = requestDto.getMembers().iterator(); iter.hasNext(); ) {
                 Member member = requestDto.toMemberEntity(iter.next());
                 memberRepository.save(member);

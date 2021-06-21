@@ -40,13 +40,33 @@ public class Reservation {
     @Column(name = "end_time", nullable = false)
     private Time endTime;
 
+    @Column(name = "department", nullable = false)
+    private String department;
+
+    @Column(name = "purpose", nullable = false)
+    private String purpose;
+
+    @Column(name = "title", nullable = false)
+    private String title;
+
+    @Column(name = "status", nullable = false)
+    private Boolean status;
+
+    @Column(name = "content", nullable = false)
+    private String content;
+
     @Builder
-    public Reservation(String leaderName, String roomName, String location, Date date, Time startTime, Time endTime) {
+    public Reservation(String leaderName, String roomName, String location, Date date, Time startTime, Time endTime, String department, String purpose, String title, String content, Boolean status) {
         this.leaderName = leaderName;
         this.roomName = roomName;
         this.location = location;
         this.date = date;
         this.startTime = startTime;
         this.endTime = endTime;
+        this.department = department;
+        this.purpose = purpose;
+        this.title = title;
+        this.content = content;
+        this.status = status;
     }
 }

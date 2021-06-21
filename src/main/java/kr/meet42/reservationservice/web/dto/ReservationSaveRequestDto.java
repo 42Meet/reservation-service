@@ -6,17 +6,19 @@ import kr.meet42.reservationservice.domain.entity.Reservation;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.w3c.dom.stylesheets.LinkStyle;
 
+import javax.persistence.Column;
 import java.sql.Date;
 import java.sql.Time;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-@Getter
+@Getter @Setter
 @NoArgsConstructor
 public class ReservationSaveRequestDto {
     private String location;
@@ -26,6 +28,12 @@ public class ReservationSaveRequestDto {
     private String endTime;
     private String leaderName;
     private ArrayList<String> members; // 배열?
+    private String department;
+    private String purpose;
+    private String title;
+    private Boolean status;
+    private String content;
+
 
 
 
@@ -40,8 +48,9 @@ public class ReservationSaveRequestDto {
 //        1: "sebaek",
 //                2: "jakang",
 //                3: "esim"
+
     @Builder
-    public ReservationSaveRequestDto(String location, String roomName, String date, String startTime, String endTime, String leaderName, ArrayList<String> members) {
+    public ReservationSaveRequestDto(String location, String roomName, String date, String startTime, String endTime, String leaderName, ArrayList<String> members, String department, String purpose, String title, Boolean status, String content) {
         this.location = location;
         this.roomName = roomName;
         this.date = date;
@@ -49,8 +58,12 @@ public class ReservationSaveRequestDto {
         this.endTime = endTime;
         this.leaderName = leaderName;
         this.members = members;
+        this.department = department;
+        this.purpose = purpose;
+        this.title = title;
+        this.status = status;
+        this.content = content;
     }
-
 
     public Participate toParticipateEntity(Reservation reservation, Member member){
 
@@ -84,6 +97,11 @@ public class ReservationSaveRequestDto {
                 .date(Date.valueOf(date))
                 .startTime(Time.valueOf(startTime))
                 .endTime(Time.valueOf(endTime))
+                .department(department)
+                .purpose(purpose)
+                .title(title)
+                .status(status)
+                .content(content)
                 .build();
     }
 }

@@ -11,11 +11,13 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.sql.Date;
-import java.sql.Time;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.sql.Time;
+import java.util.Iterator;
 
 
 @RequiredArgsConstructor
@@ -49,6 +51,19 @@ public class ReservationService {
         reservationRepository.delete(reserve);
     }
 
+    @Transactional
+    public List<Reservation> findAllReservationByParam(Map<String, String> paramMap) {
+        if (paramMap.containsKey("date") && paramMap.containsKey("roomName")) {
+            return reservationRepository.findByDateAndRoomNameOrderByStartTimeAsc(Date.valueOf(paramMap.get("date")), paramMap.get("roomName"));
+        }
+        else if (paramMap.containsKey("date") && paramMap.containsKey("location")) {
+            return reservationRepository.findByDateAndLocationOrderByStartTimeAsc(Date.valueOf(paramMap.get("date")), paramMap.get("location"));
+        }
+        else if (paramMap.containsKey("date")) {
+            return reservationRepository.findByDateOrderByStartTimeAsc(Date.valueOf(paramMap.get("date")));
+        }
+        return new ArrayList<Reservation>();
+    }
 
     public boolean isValid(ReservationSaveRequestDto requestDto) {
         String room_name;

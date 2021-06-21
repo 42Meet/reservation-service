@@ -24,9 +24,12 @@ public class ReservationSaveRequestDto {
     private String date;
     private String startTime;
     private String endTime;
-    private String leader_id;
+    private String leaderName;
     private ArrayList<String> members; // 배열?
-//
+
+
+
+    //
 //    location: "개포",
 //    room_name: "창경궁",
 //    date: "2021-06-18",
@@ -38,13 +41,13 @@ public class ReservationSaveRequestDto {
 //                2: "jakang",
 //                3: "esim"
     @Builder
-    public ReservationSaveRequestDto(String location, String roomName, String date, String start_time, String end_time, String leader_name, ArrayList<String> members){
+    public ReservationSaveRequestDto(String location, String roomName, String date, String startTime, String endTime, String leaderName, ArrayList<String> members) {
         this.location = location;
         this.roomName = roomName;
         this.date = date;
-        this.startTime = start_time;
-        this.endTime = end_time;
-        this.leader_id = leader_name;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.leaderName = leaderName;
         this.members = members;
     }
 
@@ -75,7 +78,7 @@ public class ReservationSaveRequestDto {
 
     public Reservation toReservationEntity() {
         return Reservation.builder()
-                .leader_id(1000L)
+                .leaderName(leaderName)
                 .location(location)
                 .roomName(roomName)
                 .date(Date.valueOf(date))

@@ -13,6 +13,7 @@ import org.w3c.dom.stylesheets.LinkStyle;
 import java.sql.Date;
 import java.sql.Time;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 @Getter
@@ -21,9 +22,9 @@ public class ReservationSaveRequestDto {
     private String location;
     private String roomName;
     private String date;
-    private String start_time;
-    private String end_time;
-    private String leader_name;
+    private String startTime;
+    private String endTime;
+    private String leader_id;
     private ArrayList<String> members; // 배열?
 //
 //    location: "개포",
@@ -41,19 +42,30 @@ public class ReservationSaveRequestDto {
         this.location = location;
         this.roomName = roomName;
         this.date = date;
-        this.start_time = start_time;
-        this.end_time = end_time;
-        this.leader_name = leader_name;
+        this.startTime = start_time;
+        this.endTime = end_time;
+        this.leader_id = leader_name;
         this.members = members;
     }
 
 
     public Participate toParticipateEntity(Reservation reservation, Member member){
+
         return Participate.builder()
                 .reservation(reservation)
                 .member(member)
                 .build();
     }
+
+//    public ArrayList<Long> toMemberEntities() {
+//        String tmp_intra;
+//        ArrayList<Long> member_ids = new ArrayList<Long>();
+//        for (Iterator<String> iter = members.iterator(); iter.hasNext(); ) {
+//            tmp_intra = iter.next();
+//            member_ids.add(toMemberEntity(tmp_intra).getMember_id());
+//        }
+//        return member_ids;
+//    }
 
     public Member toMemberEntity(String intra) {
         return Member.builder()
@@ -67,8 +79,8 @@ public class ReservationSaveRequestDto {
                 .location(location)
                 .roomName(roomName)
                 .date(Date.valueOf(date))
-                .startTime(Time.valueOf(start_time))
-                .endTime(Time.valueOf(end_time))
+                .startTime(Time.valueOf(startTime))
+                .endTime(Time.valueOf(endTime))
                 .build();
     }
 }

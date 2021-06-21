@@ -1,6 +1,9 @@
 package kr.meet42.reservationservice.service;
 
+import kr.meet42.reservationservice.domain.entity.Member;
 import kr.meet42.reservationservice.domain.entity.Reservation;
+import kr.meet42.reservationservice.domain.repository.MemberRepository;
+import kr.meet42.reservationservice.domain.repository.ParticipateRepository;
 import kr.meet42.reservationservice.domain.repository.ReservationRepository;
 import kr.meet42.reservationservice.web.dto.ReservationSaveRequestDto;
 import lombok.RequiredArgsConstructor;
@@ -10,6 +13,7 @@ import javax.transaction.Transactional;
 import java.sql.Date;
 import java.sql.Time;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -18,15 +22,25 @@ import java.util.List;
 @Service
 public class ReservationService {
     private final ReservationRepository reservationRepository;
+    private final MemberRepository memberRepository;
+    private final ParticipateRepository participateRepository;
 
     @Transactional
-    public Long save(ReservationSaveRequestDto requestDto) {
-        Long id = 0L;
+    public boolean save(ReservationSaveRequestDto requestDto) {
+        Reservation reservation;
+
         if (isValid(requestDto)) {
-            id = reservationRepository.save(requestDto.toReservationEntity()).getId();
+            reservation = reservationRepository.save(requestDto.toReservationEntity());
+            for (Iterator<String> iter = requestDto.getMembers().iterator(); iter.hasNext(); ) {
+                Member member = requestDto.toMemberEntity(iter.next());
+                memberRepository.save(member);
+                participateRepository.save(requestDto.toParticipateEntity(reservation, member));
+            }
+            return true; // 저장 성공
         }
-        return id;
+        return false; // 저장 실패
     }
+
 
     @Transactional
     public void delete (Long id) {
@@ -42,20 +56,27 @@ public class ReservationService {
         Time start_time;
         Time end_time;
         Reservation tmp;
+        Time tmp_start;
+        Time tmp_end;
 
         room_name = requestDto.getRoomName();
         System.out.println("room_name = " + room_name);
         date = Date.valueOf(requestDto.getDate());
-        start_time = Time.valueOf(requestDto.getStart_time());
-        end_time = Time.valueOf(requestDto.getEnd_time());
+        start_time = Time.valueOf(requestDto.getStartTime());
+        end_time = Time.valueOf(requestDto.getEndTime());
         // TODO: db에 room_name, date 로 reservation 리스트 가져오고 start_time, end_time 비교 ...NoSqlDB적용고려
         List<Reservation> reservations =  reservationRepository.findByRoomNameAndDate(room_name, date);
         for (Iterator<Reservation> iter = reservations.iterator(); iter.hasNext(); ) {
             tmp = iter.next();
-            tmp.getStartTime();
-            tmp.getEndTime();
-
+            tmp_start = tmp.getStartTime();
+            tmp_end = tmp.getEndTime();
+            if (end_time.compareTo(tmp_start) > 0 && end_time.compareTo(tmp_end) <= 0)
+                return false;
+            else if (start_time.compareTo(tmp_end) < 0 && start_time.compareTo(tmp_start) >= 0)
+                return false;
+            else if (start_time.compareTo(tmp_start) >= 0 && end_time.compareTo(tmp_end) <= 0)
+                return false;
         }
-        return false;
+        return true;
     }
 }

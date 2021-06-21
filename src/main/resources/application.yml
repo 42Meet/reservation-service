@@ -8,4 +8,4 @@ spring:
     include: credential
   jpa:
     hibernate:
-      ddl-auto: none
+      ddl-auto: create

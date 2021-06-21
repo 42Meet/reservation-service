@@ -28,11 +28,11 @@ public class ReservationRepositoryTest {
         Date date = Date.valueOf("2021-06-18");
         Time startTime = Time.valueOf("01:00:00");
         Time endTime = Time.valueOf("03:00:00");
-        String room_name = "창경궁";
+        String roomName = "창경궁";
 
         reservationRepository.save(Reservation.builder()
                 .leader_id(leader_id)
-                .room_name(room_name)
+                .roomName(roomName)
                 .location(location)
                 .date(date)
                 .startTime(startTime)

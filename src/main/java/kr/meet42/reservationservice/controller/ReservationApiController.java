@@ -23,8 +23,10 @@ public class ReservationApiController {
 //        System.out.println("requestDto = " + requestDto.getMember());
         //        System.out.println("requestDto.getMember().get(0) = " + requestDto.getMember().get(0));
         ArrayList<String> members = requestDto.getMembers();
-        Long leader_id;
-        leader_id = reservationService.save(requestDto);
+        // Long leader_id;
+        boolean result;
+        result = reservationService.save(requestDto);
+        System.out.println("result = " + result);
     }
 //
 //    @GetMapping("/v1/reservation/new")

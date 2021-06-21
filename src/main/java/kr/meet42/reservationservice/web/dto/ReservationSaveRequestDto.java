@@ -13,6 +13,7 @@ import org.w3c.dom.stylesheets.LinkStyle;
 import java.sql.Date;
 import java.sql.Time;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 @Getter
@@ -52,11 +53,22 @@ public class ReservationSaveRequestDto {
 
 
     public Participate toParticipateEntity(Reservation reservation, Member member){
+
         return Participate.builder()
                 .reservation(reservation)
                 .member(member)
                 .build();
     }
+
+//    public ArrayList<Long> toMemberEntities() {
+//        String tmp_intra;
+//        ArrayList<Long> member_ids = new ArrayList<Long>();
+//        for (Iterator<String> iter = members.iterator(); iter.hasNext(); ) {
+//            tmp_intra = iter.next();
+//            member_ids.add(toMemberEntity(tmp_intra).getMember_id());
+//        }
+//        return member_ids;
+//    }
 
     public Member toMemberEntity(String intra) {
         return Member.builder()

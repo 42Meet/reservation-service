@@ -33,9 +33,8 @@
 
 |Method|URL|기능|
 |------|---|---|
-|GET|/member/login|로그인|
-|GET|/reservation/list?date=2021-06-21|해당 날짜의 예약 현황 가져오기|
-|POST|/reservation/register|예약하기|
-|GET|/reservation/mypage|예약 정보 가져오기|
-|POST|/reservation/delete|삭제|
-|GET|/reservation/rooms|전체 회의실 정보 가져오기|
+|GET|/list?date=2021-06-21|해당 날짜의 예약 현황 가져오기|
+|POST|/register|예약하기|
+|GET|/mypage|예약 정보 가져오기|
+|POST|/delete|삭제|
+|GET|/rooms|전체 회의실 정보 가져오기|

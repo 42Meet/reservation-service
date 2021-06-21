@@ -28,7 +28,7 @@ public class ReservationApiController {
     private final ReservationService reservationService;
     private final AdminService adminService;
 
-    @PostMapping("/new")
+    @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody ReservationSaveRequestDto requestDto) {
         return reservationService.save(requestDto);
     }
@@ -53,7 +53,7 @@ public class ReservationApiController {
         return reservationService.findMyReservation(request);
     }
 
-    @GetMapping("/room")
+    @GetMapping("/rooms")
     public List<AdminListUpRequestDto> listUp(HttpServletRequest request, HttpServletResponse response) {
         //adminService.saveRoomList();
         return adminService.findAllRooms();

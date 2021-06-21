@@ -70,8 +70,17 @@ public class ReservationService {
             if (scheReservation.isPresent())
                 sche.add(scheReservation.get());
         }
+        listAscSort(proc);
+        listAscSort(sche);
+        listDescSort(end);
+        res.add(proc);
+        res.add(sche);
+        res.add(end);
+        return res;
+    }
 
-        Collections.sort(proc, new Comparator<Reservation>() {
+    private void listAscSort(List<Reservation> list) {
+        Collections.sort(list, new Comparator<Reservation>() {
             @Override
             public int compare(Reservation b1, Reservation b2) {
                 if (b1.getDate().compareTo(b2.getDate()) == 0) {
@@ -80,16 +89,10 @@ public class ReservationService {
                     return b1.getDate().compareTo(b2.getDate());
             }
         });
-        Collections.sort(sche, new Comparator<Reservation>() {
-            @Override
-            public int compare(Reservation b1, Reservation b2) {
-                if (b1.getDate().compareTo(b2.getDate()) == 0) {
-                    return b1.getStartTime().compareTo(b2.getStartTime());
-                } else
-                    return b1.getDate().compareTo(b2.getDate());
-            }
-        });
-        Collections.sort(end, new Comparator<Reservation>() {
+    }
+
+    private void listDescSort(List<Reservation> list) {
+        Collections.sort(list, new Comparator<Reservation>() {
             @Override
             public int compare(Reservation b1, Reservation b2) {
                 if (b1.getDate().compareTo(b2.getDate()) == 0) {
@@ -98,24 +101,6 @@ public class ReservationService {
                     return b2.getDate().compareTo(b1.getDate());
             }
         });
-        res.add(proc);
-        res.add(sche);
-        res.add(end);
-        return res;
-
-
-        // TODO: 토큰으로부터 intraName받아오기
-//        String jwt = request.getHeader("access-token");
-//        String intra = jwtUtil.validateAndExtract(jwt);
-//        System.out.println("intra = " + intra);
-        //String intra = "sebaek";
-//        List<Member> members = memberRepository.findByIntra(intra);
-//        for (Iterator<Member> iter = members.iterator(); iter.hasNext(); ) {
-//            Member member = iter.next();
-//            reservations.add(participateRepository.findByMember(member).getReservation());
-//        }
-
-//        return reservations;
     }
 
     @Transactional

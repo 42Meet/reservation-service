@@ -14,11 +14,11 @@ public class Participate {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long participate_id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name="reserve_id")
     private Reservation reservation;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name="member_id")
     private Member member;
 

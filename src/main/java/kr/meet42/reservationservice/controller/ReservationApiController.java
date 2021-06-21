@@ -42,4 +42,10 @@ public class ReservationApiController {
                 .forEachRemaining(paramName -> paramMap.put(paramName, request.getParameter(paramName)));
         return reservationService.findAllReservationByParam(paramMap);
     }
+
+    @GetMapping("/mypage")
+    public List<Reservation> myReservation(HttpServletRequest request, HttpServletResponse response) {
+        return reservationService.findMyReservation(request);
+    }
+
 }

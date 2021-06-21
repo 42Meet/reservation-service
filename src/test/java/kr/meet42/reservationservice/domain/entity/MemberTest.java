@@ -19,19 +19,19 @@ public class MemberTest {
         memberRepository.deleteAll();
     }
 
-    @Test
-    public void 멤버_생성() {
-        // given
-        Member member = new Member();
-
-        member.setMember_id(12345L);
-        member.setIntra("taehkim");
-
-        // when
-        memberRepository.save(member);
-
-        // then
-        Member finded = memberRepository.findById(member.getMember_id()).get();
-        assertThat(member.getIntra()).isEqualTo(finded.getIntra());
-    }
+//    @Test
+//    public void 멤버_생성() {
+//        // given
+//        Member member = new Member();
+//
+//        member.setMember_id(12345L);
+//        member.setIntra("taehkim");
+//
+//        // when
+//        memberRepository.save(member);
+//
+//        // then
+//        Member finded = memberRepository.findById(member.getMember_id()).get();
+//        assertThat(member.getIntra()).isEqualTo(finded.getIntra());
+//    }
 }

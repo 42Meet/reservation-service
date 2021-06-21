@@ -7,6 +7,7 @@ import kr.meet42.reservationservice.domain.entity.Reservation;
 import kr.meet42.reservationservice.domain.repository.MemberRepository;
 import kr.meet42.reservationservice.domain.repository.ParticipateRepository;
 import kr.meet42.reservationservice.domain.repository.ReservationRepository;
+import kr.meet42.reservationservice.utils.JWTUtil;
 import kr.meet42.reservationservice.web.dto.ReservationSaveRequestDto;
 import kr.meet42.reservationservice.web.dto.ReservationDeleteRequestDto;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 import java.sql.Date;
 import java.util.*;
@@ -27,6 +29,7 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final MemberRepository memberRepository;
     private final ParticipateRepository participateRepository;
+    private final JWTUtil jwtUtil;
 
     @Transactional
     public boolean save(ReservationSaveRequestDto requestDto) {
@@ -45,6 +48,22 @@ public class ReservationService {
         return false; // 저장 실패
     }
 
+    @Transactional // Question: 여기서 Transactional이 필요한가? 그냥 조횐데?
+    public List<Reservation> findMyReservation(HttpServletRequest request) {
+
+        List<Reservation> reservations = new ArrayList<Reservation>();
+        // TODO: 토큰으로부터 intraName받아오기
+//        String jwt = request.getHeader("access-token");
+//        String intra = jwtUtil.validateAndExtract(jwt);
+//        System.out.println("intra = " + intra);
+        String intra = "sebaek";
+        List<Member> members = memberRepository.findByIntra(intra);
+        for (Iterator<Member> iter = members.iterator(); iter.hasNext(); ) {
+            Member member = iter.next();
+            reservations.add(participateRepository.findByMember(member).getReservation());
+        }
+        return reservations;
+    }
 
     @Transactional
     public ResponseEntity<?> delete (ReservationDeleteRequestDto dto) {

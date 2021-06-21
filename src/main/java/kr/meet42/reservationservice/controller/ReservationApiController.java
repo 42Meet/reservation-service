@@ -48,4 +48,10 @@ public class ReservationApiController {
         requestDto.setJwt(jwt);
         return reservationService.delete(requestDto);
     }
+
+    @GetMapping("/mypage")
+    public List<Reservation> myReservation(HttpServletRequest request, HttpServletResponse response) {
+        return reservationService.findMyReservation(request);
+    }
+
 }

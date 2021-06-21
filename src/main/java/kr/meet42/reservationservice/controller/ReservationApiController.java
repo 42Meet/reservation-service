@@ -26,11 +26,8 @@ public class ReservationApiController {
     private final ReservationService reservationService;
 
     @PostMapping("/new")
-    public void register(@RequestBody ReservationSaveRequestDto requestDto) {
-        ArrayList<String> members = requestDto.getMembers();
-        boolean result;
-        result = reservationService.save(requestDto);
-        System.out.println("result = " + result);
+    public ResponseEntity<?> register(@RequestBody ReservationSaveRequestDto requestDto) {
+        return reservationService.save(requestDto);
     }
 
     @GetMapping("/list")
@@ -38,11 +35,10 @@ public class ReservationApiController {
         Map<String, String> paramMap = new HashMap<>();
         request.getParameterNames().asIterator()
                 .forEachRemaining(paramName -> paramMap.put(paramName, request.getParameter(paramName)));
-//        return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         return new ResponseEntity<>(reservationService.findAllReservationByParam(paramMap), HttpStatus.OK);
     }
 
-    @PostMapping("delete")
+    @PostMapping("/delete")
     public ResponseEntity<?> delete(@RequestBody ReservationDeleteRequestDto requestDto, HttpServletRequest request, HttpServletResponse response) {
         String jwt = request.getHeader("jwt");
         requestDto.setJwt(jwt);

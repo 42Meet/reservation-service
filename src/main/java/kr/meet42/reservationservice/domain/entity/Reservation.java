@@ -6,9 +6,11 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.sql.Array;
 import java.sql.Date;
 import java.sql.Time;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -38,17 +40,13 @@ public class Reservation {
     @Column(name = "end_time", nullable = false)
     private Time endTime;
 
-    @OneToMany(cascade = CascadeType.ALL)
-    private List<Member> members;
-
     @Builder
-    public Reservation(String leaderName, String roomName, String location, Date date, Time startTime, Time endTime, List<kr.meet42.reservationservice.domain.entity.Member> members) {
+    public Reservation(String leaderName, String roomName, String location, Date date, Time startTime, Time endTime) {
         this.leaderName = leaderName;
         this.roomName = roomName;
         this.location = location;
         this.date = date;
         this.startTime = startTime;
         this.endTime = endTime;
-        this.members = members;
     }
 }

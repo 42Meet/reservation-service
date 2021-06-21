@@ -32,7 +32,7 @@ public class ReservationService {
     private final JWTUtil jwtUtil;
 
     @Transactional
-    public boolean save(ReservationSaveRequestDto requestDto) {
+    public ResponseEntity<?> save(ReservationSaveRequestDto requestDto) {
         Reservation reservation;
 
         if (isValid(requestDto)) {
@@ -43,9 +43,9 @@ public class ReservationService {
                 memberRepository.save(member);
                 participateRepository.save(requestDto.toParticipateEntity(reservation, member));
             }
-            return true; // 저장 성공
+            return new ResponseEntity<>(HttpStatus.OK); // 저장 성공
         }
-        return false; // 저장 실패
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND); // 저장 실패
     }
 
     @Transactional // Question: 여기서 Transactional이 필요한가? 그냥 조횐데?
@@ -108,12 +108,13 @@ public class ReservationService {
         Time tmp_end;
 
         room_name = requestDto.getRoomName();
-        System.out.println("room_name = " + room_name);
         date = Date.valueOf(requestDto.getDate());
         start_time = Time.valueOf(requestDto.getStartTime());
         end_time = Time.valueOf(requestDto.getEndTime());
         // TODO: db에 room_name, date 로 reservation 리스트 가져오고 start_time, end_time 비교 ...NoSqlDB적용고려
         List<Reservation> reservations =  reservationRepository.findByRoomNameAndDate(room_name, date);
+        if (start_time.compareTo(end_time) >= 0)
+            return false;
         for (Iterator<Reservation> iter = reservations.iterator(); iter.hasNext(); ) {
             tmp = iter.next();
             tmp_start = tmp.getStartTime();

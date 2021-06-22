@@ -33,7 +33,6 @@ public class ReservationService {
     private final MemberRepository memberRepository;
     private final ParticipateRepository participateRepository;
     private final JWTUtil jwtUtil;
-    private final EntityManagerFactory entityManagerFactory;
 
     @Transactional
     public ResponseEntity<?> save(ReservationSaveRequestDto requestDto) {

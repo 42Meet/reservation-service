@@ -58,5 +58,4 @@ public class ReservationApiController {
         //adminService.saveRoomList();
         return adminService.findAllRooms();
     }
-
 }

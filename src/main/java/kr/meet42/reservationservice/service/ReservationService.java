@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -26,7 +27,7 @@ import java.util.*;
 import java.sql.Time;
 import java.util.Iterator;
 
-
+@EnableSwagger2
 @RequiredArgsConstructor
 @Service
 public class ReservationService {

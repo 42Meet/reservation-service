@@ -87,24 +87,37 @@ public class ReservationService {
 
     @org.springframework.transaction.annotation.Transactional
     public void setReservationStatus(Participate participate) {
-        Reservation target = participate.getReservation();
-        if (target.getDate().compareTo(Calendar.getInstance().getTime()) == 0) {
-            // 시작시간이 현재시간보다 크다면
-            if (target.getStartTime().compareTo(Calendar.getInstance().getTime()) > 0) {
-                target.setStatus(2L);
-            }
-            // 사이에 있으면
-            else if (target.getStartTime().compareTo(Calendar.getInstance().getTime()) < 0
-                    && target.getEndTime().compareTo(Calendar.getInstance().getTime()) > 0)
-                target.setStatus(1L);
-            else
-                target.setStatus(0L);
+        Reservation reservation = participate.getReservation();
+        java.util.Date start = new java.util.Date(reservation.getDate().getYear(), reservation.getDate().getMonth(), reservation.getDate().getDate(), reservation.getStartTime().getHours(), 0, 0);
+        java.util.Date end = new java.util.Date(reservation.getDate().getYear(), reservation.getDate().getMonth(), reservation.getDate().getDate(), reservation.getEndTime().getHours(), 0, 0);
+        java.util.Date cur = Calendar.getInstance().getTime();
+        // 예약시간이 더 클경우. 즉, 예정일경우
+        if (start.compareTo(cur) > 0) {
+            reservation.setStatus(2L);
         }
-        // 더 늦으면 즉, 예정되어있으면
-        else if (target.getDate().compareTo(Calendar.getInstance().getTime()) > 0)
-            target.setStatus(2L);
+        // 지났으면
+        else if (end.compareTo(cur) > 0) {
+            reservation.setStatus(0L);
+        }
         else
-            target.setStatus(0L);
+            reservation.setStatus(1L);
+//        if (start.compareTo(Calendar.getInstance().getTime()) == 0) {
+//            // 시작시간이 현재시간보다 크다면
+//            if (target.getStartTime().compareTo(Calendar.getInstance().getTime()) > 0) {
+//                target.setStatus(2L);
+//            }
+//            // 사이에 있으면
+//            else if (target.getStartTime().compareTo(Calendar.getInstance().getTime()) < 0
+//                    && target.getEndTime().compareTo(Calendar.getInstance().getTime()) > 0)
+//                target.setStatus(1L);
+//            else
+//                target.setStatus(0L);
+//        }
+//        // 더 늦으면 즉, 예정되어있으면
+//        else if (target.getDate().compareTo(Calendar.getInstance().getTime()) > 0)
+//            target.setStatus(2L);
+//        else
+//            target.setStatus(0L);
     }
 
     private void listAscSort(List<ReservationResponseDto> list) {

@@ -1,0 +1,145 @@
+- 응
+```
+[
+    [],
+    [
+        {
+            "id": 2,
+            "leaderName": "taehkim",
+            "roomName": "유튜브스튜디오 1층",
+            "location": "개포",
+            "date": "2021-06-26",
+            "startTime": "15:00:00",
+            "endTime": "17:00:00",
+            "department": "42Seoul",
+            "purpose": "알고리즘 스터디",
+            "title": "취업폭주기관차",
+            "status": 2,
+            "content": "아무내용입니다.",
+            "participate": []
+        },
+        {
+            "id": 1,
+            "leaderName": "taehkim",
+            "roomName": "유튜브스튜디오 1층",
+            "location": "개포",
+            "date": "2021-06-27",
+            "startTime": "15:00:00",
+            "endTime": "17:00:00",
+            "department": "42Seoul",
+            "purpose": "알고리즘 스터디",
+            "title": "취업폭주기관차",
+            "status": 2,
+            "content": "아무내용입니다.",
+            "participate": []
+        }
+    ],
+    [
+        {
+            "id": 11,
+            "leaderName": "taehkim",
+            "roomName": "유튜브스튜디오 1층",
+            "location": "개포",
+            "date": "2021-06-22",
+            "startTime": "09:00:00",
+            "endTime": "11:00:00",
+            "department": "42Seoul",
+            "purpose": "알고리즘 스터디",
+            "title": "취업폭주기관차",
+            "status": 0,
+            "content": "아무내용입니다.",
+            "participate": []
+        },
+        {
+            "id": 6,
+            "leaderName": "taehkim",
+            "roomName": "유튜브스튜디오 1층",
+            "location": "개포",
+            "date": "2021-06-22",
+            "startTime": "02:00:00",
+            "endTime": "05:00:00",
+            "department": "42Seoul",
+            "purpose": "알고리즘 스터디",
+            "title": "취업폭주기관차",
+            "status": 0,
+            "content": "아무내용입니다.",
+            "participate": []
+        },
+        {
+            "id": 7,
+            "leaderName": "taehkim",
+            "roomName": "유튜브스튜디오 1층",
+            "location": "개포",
+            "date": "2021-06-21",
+            "startTime": "02:00:00",
+            "endTime": "05:00:00",
+            "department": "42Seoul",
+            "purpose": "알고리즘 스터디",
+            "title": "취업폭주기관차",
+            "status": 0,
+            "content": "아무내용입니다.",
+            "participate": []
+        },
+        {
+            "id": 10,
+            "leaderName": "Taehkim",
+            "roomName": "경복궁",
+            "location": "개포",
+            "date": "2021-06-18",
+            "startTime": "02:00:00",
+            "endTime": "03:00:00",
+            "department": "42Seoul",
+            "purpose": "스터디1",
+            "title": "회의1",
+            "status": 0,
+            "content": "content1",
+            "participate": []
+        },
+        {
+            "id": 9,
+            "leaderName": "Taehkim",
+            "roomName": "경복궁",
+            "location": "개포",
+            "date": "2021-06-18",
+            "startTime": "01:00:00",
+            "endTime": "02:00:00",
+            "department": "42Seoul",
+            "purpose": "스터디1",
+            "title": "회의1",
+            "status": 0,
+            "content": "content1",
+            "participate": []
+        },
+        {
+            "id": 3,
+            "leaderName": "taehkim",
+            "roomName": "유튜브스튜디오 1층",
+            "location": "개포",
+            "date": "2021-06-08",
+            "startTime": "15:00:00",
+            "endTime": "17:00:00",
+            "department": "42Seoul",
+            "purpose": "알고리즘 스터디",
+            "title": "취업폭주기관차",
+            "status": 0,
+            "content": "아무내용입니다.",
+            "participate": []
+        },
+        {
+            "id": 8,
+            "leaderName": "taehkim",
+            "roomName": "유튜브스튜디오 1층",
+            "location": "개포",
+            "date": "2021-06-07",
+            "startTime": "15:00:00",
+            "endTime": "17:00:00",
+            "department": "42Seoul",
+            "purpose": "알고리즘 스터디",
+            "title": "취업폭주기관차",
+            "status": 0,
+            "content": "아무내용입니다.",
+            "participate": []
+        }
+    ]
+]
+```

@@ -55,7 +55,12 @@ public class ReservationApiController {
 
     @GetMapping("/rooms")
     public List<AdminListUpRequestDto> listUp(HttpServletRequest request, HttpServletResponse response) {
-        //adminService.saveRoomList();
+//        adminService.saveRoomList();
         return adminService.findAllRooms();
+    }
+
+    @GetMapping("/init")
+    public void init() {
+        adminService.saveRoomList();
     }
 }

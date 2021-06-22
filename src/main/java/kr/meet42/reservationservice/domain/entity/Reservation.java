@@ -1,5 +1,6 @@
 package kr.meet42.reservationservice.domain.entity;
 
+import kr.meet42.reservationservice.web.dto.ReservationResponseDto;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,6 +14,7 @@ import java.sql.Date;
 import java.sql.Time;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 @Getter
@@ -75,5 +77,23 @@ public class Reservation {
         this.status = status;
         this.content = content;
         this.participate = participate;
+    }
+
+    public ReservationResponseDto toResponseDto(ArrayList<String> members) {
+        return ReservationResponseDto.builder()
+                .date(getDate())
+                .content(getContent())
+                .department(getDepartment())
+                .endTime(getEndTime())
+                .id(getId())
+                .leaderName(getLeaderName())
+                .location(getLocation())
+                .purpose(getPurpose())
+                .roomName(getRoomName())
+                .startTime(getStartTime())
+                .status(getStatus())
+                .title(getTitle())
+                .members(members)
+                .build();
     }
 }

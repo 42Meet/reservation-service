@@ -4,6 +4,7 @@ import kr.meet42.reservationservice.domain.entity.Member;
 import kr.meet42.reservationservice.domain.entity.Participate;
 import kr.meet42.reservationservice.domain.entity.Reservation;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 

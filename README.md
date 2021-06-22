@@ -42,5 +42,5 @@
 |GET|/rooms|전체 회의실 정보 가져오기|||[보기](https://github.com/42Meet/reservation-service/blob/main/mdfiles/roomsResponse.md)|
 
 # DB 구조
-![alt text](https://github.com/sebaek42/sebaek42/blob/master/Reservation-Service.png?raw=true)
+![image](https://user-images.githubusercontent.com/43032377/122879335-be292780-d373-11eb-8801-134b861ae65d.png)
 

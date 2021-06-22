@@ -1,5 +1,6 @@
 package kr.meet42.reservationservice.controller;
 
+import io.swagger.annotations.ApiOperation;
 import kr.meet42.reservationservice.domain.entity.Reservation;
 import kr.meet42.reservationservice.service.AdminService;
 import kr.meet42.reservationservice.service.ReservationService;
@@ -28,11 +29,13 @@ public class ReservationApiController {
     private final ReservationService reservationService;
     private final AdminService adminService;
 
+    @ApiOperation(value = "예약 생성", notes = "예약 생성")
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody ReservationSaveRequestDto requestDto) {
         return reservationService.save(requestDto);
     }
 
+    @ApiOperation(value = "예약 현황 조회", notes = "예약 현황 조회")
     @GetMapping("/list")
     public ResponseEntity<List<Reservation>> findAll(HttpServletRequest request, HttpServletResponse response) {
         Map<String, String> paramMap = new HashMap<>();
@@ -41,6 +44,7 @@ public class ReservationApiController {
         return new ResponseEntity<>(reservationService.findAllReservationByParam(paramMap), HttpStatus.OK);
     }
 
+    @ApiOperation(value = "예약 삭제", notes = "예약 삭제")
     @PostMapping("/delete")
     public ResponseEntity<?> delete(@RequestBody ReservationDeleteRequestDto requestDto, HttpServletRequest request, HttpServletResponse response) {
         String jwt = request.getHeader("jwt");
@@ -48,11 +52,13 @@ public class ReservationApiController {
         return reservationService.delete(requestDto);
     }
 
+    @ApiOperation(value = "마이페이지", notes = "마이페이지")
     @GetMapping("/mypage")
     public List<List<Reservation>> myReservation(HttpServletRequest request, HttpServletResponse response) {
         return reservationService.findMyReservation(request);
     }
 
+    @ApiOperation(value = "회의실 명단 조회", notes = "회의실 명단 조회")
     @GetMapping("/rooms")
     public List<AdminListUpRequestDto> listUp(HttpServletRequest request, HttpServletResponse response) {
 //        adminService.saveRoomList();

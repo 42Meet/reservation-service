@@ -58,7 +58,8 @@ public class ReservationService {
         List<Reservation> proc = new ArrayList<Reservation>();
         List<Reservation> end = new ArrayList<>();
         List<Reservation> sche = new ArrayList<>();
-        String intra = "sebaek";
+//        String intra = "sebaek";
+        String intra = jwtUtil.validateAndExtract(request.getHeader("access_token"));
         List<Member> members = memberRepository.findByIntra(intra);
         for (Iterator<Member> iter = members.iterator(); iter.hasNext();) {
             Member member = iter.next();

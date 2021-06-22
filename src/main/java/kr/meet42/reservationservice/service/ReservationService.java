@@ -96,7 +96,7 @@ public class ReservationService {
             reservation.setStatus(2L);
         }
         // 지났으면
-        else if (end.compareTo(cur) > 0) {
+        else if (end.compareTo(cur) < 0) {
             reservation.setStatus(0L);
         }
         else

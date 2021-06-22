@@ -5,6 +5,7 @@ import kr.meet42.reservationservice.domain.entity.Reservation;
 import kr.meet42.reservationservice.service.AdminService;
 import kr.meet42.reservationservice.service.ReservationService;
 import kr.meet42.reservationservice.web.dto.AdminListUpRequestDto;
+import kr.meet42.reservationservice.web.dto.ReservationResponseDto;
 import kr.meet42.reservationservice.web.dto.ReservationSaveRequestDto;
 import kr.meet42.reservationservice.web.dto.ReservationDeleteRequestDto;
 import lombok.RequiredArgsConstructor;
@@ -37,7 +38,7 @@ public class ReservationApiController {
 
     @ApiOperation(value = "예약 현황 조회", notes = "예약 현황 조회")
     @GetMapping("/list")
-    public ResponseEntity<List<Reservation>> findAll(HttpServletRequest request, HttpServletResponse response) {
+    public ResponseEntity<List<ReservationResponseDto>> findAll(HttpServletRequest request, HttpServletResponse response) {
         Map<String, String> paramMap = new HashMap<>();
         request.getParameterNames().asIterator()
                 .forEachRemaining(paramName -> paramMap.put(paramName, request.getParameter(paramName)));
@@ -54,7 +55,7 @@ public class ReservationApiController {
 
     @ApiOperation(value = "마이페이지", notes = "마이페이지")
     @GetMapping("/mypage")
-    public List<List<Reservation>> myReservation(HttpServletRequest request, HttpServletResponse response) {
+    public List<List<ReservationResponseDto>> myReservation(HttpServletRequest request, HttpServletResponse response) {
         return reservationService.findMyReservation(request);
     }
 

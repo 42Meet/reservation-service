@@ -8,6 +8,7 @@ import kr.meet42.reservationservice.domain.repository.MemberRepository;
 import kr.meet42.reservationservice.domain.repository.ParticipateRepository;
 import kr.meet42.reservationservice.domain.repository.ReservationRepository;
 import kr.meet42.reservationservice.utils.JWTUtil;
+import kr.meet42.reservationservice.web.dto.ReservationResponseDto;
 import kr.meet42.reservationservice.web.dto.ReservationSaveRequestDto;
 import kr.meet42.reservationservice.web.dto.ReservationDeleteRequestDto;
 import lombok.RequiredArgsConstructor;
@@ -53,11 +54,11 @@ public class ReservationService {
     }
 
     @Transactional // Question: 여기서 Transactional이 필요한가? 그냥 조횐데?
-    public List<List<Reservation>> findMyReservation(HttpServletRequest request) {
-        List<List<Reservation>> res = new ArrayList<>(new ArrayList<>());
-        List<Reservation> proc = new ArrayList<Reservation>();
-        List<Reservation> end = new ArrayList<>();
-        List<Reservation> sche = new ArrayList<>();
+    public List<List<ReservationResponseDto>> findMyReservation(HttpServletRequest request) {
+        List<List<ReservationResponseDto>> res = new ArrayList<>(new ArrayList<>());
+        List<ReservationResponseDto> proc = new ArrayList<>();
+        List<ReservationResponseDto> end = new ArrayList<>();
+        List<ReservationResponseDto> sche = new ArrayList<>();
 //        String intra = "sebaek";
         String intra = jwtUtil.validateAndExtract(request.getHeader("access_token"));
         List<Member> members = memberRepository.findByIntra(intra);
@@ -67,13 +68,13 @@ public class ReservationService {
             setReservationStatus(participate);
             Optional<Reservation> procReservation = reservationRepository.findByIdAndStatus(participate.getReservation().getId(), 1L);
             if (procReservation.isPresent())
-                proc.add(procReservation.get());
+                proc.add(procReservation.get().toResponseDto(getMembers(procReservation.get())));
             Optional<Reservation> endReservation = reservationRepository.findByIdAndStatus(participate.getReservation().getId(), 0L);
             if (endReservation.isPresent())
-                end.add(endReservation.get());
+                end.add(endReservation.get().toResponseDto(getMembers(endReservation.get())));
             Optional<Reservation> scheReservation = reservationRepository.findByIdAndStatus(participate.getReservation().getId(), 2L);
             if (scheReservation.isPresent())
-                sche.add(scheReservation.get());
+                sche.add(scheReservation.get().toResponseDto(getMembers(scheReservation.get())));
         }
         listAscSort(proc);
         listAscSort(sche);
@@ -106,10 +107,10 @@ public class ReservationService {
             target.setStatus(0L);
     }
 
-    private void listAscSort(List<Reservation> list) {
-        Collections.sort(list, new Comparator<Reservation>() {
+    private void listAscSort(List<ReservationResponseDto> list) {
+        Collections.sort(list, new Comparator<ReservationResponseDto>() {
             @Override
-            public int compare(Reservation b1, Reservation b2) {
+            public int compare(ReservationResponseDto b1, ReservationResponseDto b2) {
                 if (b1.getDate().compareTo(b2.getDate()) == 0) {
                     return b1.getStartTime().compareTo(b2.getStartTime());
                 } else
@@ -118,10 +119,10 @@ public class ReservationService {
         });
     }
 
-    private void listDescSort(List<Reservation> list) {
-        Collections.sort(list, new Comparator<Reservation>() {
+    private void listDescSort(List<ReservationResponseDto> list) {
+        Collections.sort(list, new Comparator<ReservationResponseDto>() {
             @Override
-            public int compare(Reservation b1, Reservation b2) {
+            public int compare(ReservationResponseDto b1, ReservationResponseDto b2) {
                 if (b1.getDate().compareTo(b2.getDate()) == 0) {
                     return b2.getStartTime().compareTo(b1.getStartTime());
                 } else
@@ -150,17 +151,41 @@ public class ReservationService {
     }
 
     @Transactional
-    public List<Reservation> findAllReservationByParam(Map<String, String> paramMap) {
+    public List<ReservationResponseDto> findAllReservationByParam(Map<String, String> paramMap) {
+        List<Reservation> res = new ArrayList<>();
         if (paramMap.containsKey("date") && paramMap.containsKey("roomName")) {
-            return reservationRepository.findByDateAndRoomNameOrderByStartTimeAsc(Date.valueOf(paramMap.get("date")), paramMap.get("roomName"));
+            res = reservationRepository.findByDateAndRoomNameOrderByStartTimeAsc(Date.valueOf(paramMap.get("date")), paramMap.get("roomName"));
         }
         else if (paramMap.containsKey("date") && paramMap.containsKey("location")) {
-            return reservationRepository.findByDateAndLocationOrderByStartTimeAsc(Date.valueOf(paramMap.get("date")), paramMap.get("location"));
+            res = reservationRepository.findByDateAndLocationOrderByStartTimeAsc(Date.valueOf(paramMap.get("date")), paramMap.get("location"));
         }
         else if (paramMap.containsKey("date")) {
-            return reservationRepository.findByDateOrderByStartTimeAsc(Date.valueOf(paramMap.get("date")));
+            res = reservationRepository.findByDateOrderByStartTimeAsc(Date.valueOf(paramMap.get("date")));
         }
-        return new ArrayList<Reservation>();
+        if (!res.isEmpty()) {
+            return getReservationResponseDtos(res);
+        }
+        return new ArrayList<ReservationResponseDto>();
+    }
+
+    private List<ReservationResponseDto> getReservationResponseDtos(List<Reservation> res) {
+        List<ReservationResponseDto> dtos = new ArrayList<>();
+        for (Iterator<Reservation> iter = res.iterator(); iter.hasNext();) {
+            Reservation cur = iter.next();
+            dtos.add(cur.toResponseDto(getMembers(cur)));
+        }
+        return dtos;
+    }
+
+    public ArrayList<String> getMembers(Reservation reservation) {
+        ArrayList<String> ret = new ArrayList<>();
+        List<Participate> participate = participateRepository.findByReservation(reservation);
+        for (Iterator<Participate> iter = participate.iterator(); iter.hasNext();) {
+            Optional<Member> member = memberRepository.findById(iter.next().getMember().getMember_id());
+            if (member.isPresent())
+                ret.add(member.get().getIntra());
+        }
+        return ret;
     }
 
     public boolean isValid(ReservationSaveRequestDto requestDto) {

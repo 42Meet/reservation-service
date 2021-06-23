@@ -31,7 +31,7 @@
 
 <br/>
 
-# API 명세 🗒 [swagger](http://42meet.kro.kr:8081/swagger-ui.html)
+# 🗒 API 명세 [swagger](http://42meet.kro.kr:8081/swagger-ui.html)
 
 |Method|URL|기능|파라미터|RequestBody|ResponseBody|
 |------|---|---|------|-----------|------------|

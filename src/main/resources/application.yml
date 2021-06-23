@@ -19,5 +19,13 @@ eureka:
     service-url:
       defaultZone: http://15.164.85.227:8761/eureka
 
+management:
+  endpoint:
+  endpoints:
+    web:
+      exposure:
+        include: info, health
+
+
 token:
   secret: sample

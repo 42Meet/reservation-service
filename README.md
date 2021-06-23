@@ -31,7 +31,7 @@
 
 <br/>
 
-# 🗒 API 명세 [swagger](http://42meet.kro.kr:8081/swagger-ui.html)
+### 🗒 API 명세 [swagger](http://42meet.kro.kr:8081/swagger-ui.html)
 
 |Method|URL|기능|파라미터|RequestBody|ResponseBody|
 |------|---|---|------|-----------|------------|
@@ -41,6 +41,6 @@
 |POST|/delete|삭제||[보기](https://github.com/42Meet/reservation-service/blob/main/mdfiles/delete.md)||
 |GET|/rooms|전체 회의실 정보 가져오기|||[보기](https://github.com/42Meet/reservation-service/blob/main/mdfiles/roomsResponse.md)|
 
-# DB 구조
+### DB 구조
 ![image](https://user-images.githubusercontent.com/43032377/122879335-be292780-d373-11eb-8801-134b861ae65d.png)
 

@@ -36,7 +36,7 @@ dependencies {
     implementation 'io.jsonwebtoken:jjwt:0.9.1'
     implementation 'javax.xml.bind:jaxb-api'
     implementation group: 'io.springfox', name: 'springfox-swagger-ui', version: '2.9.2'
-
+    //implementation "io.springfox:springfox-data-rest:2.10.5"
 }
 
 test {

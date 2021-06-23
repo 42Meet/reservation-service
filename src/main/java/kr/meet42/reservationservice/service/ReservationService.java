@@ -11,6 +11,7 @@ import kr.meet42.reservationservice.utils.JWTUtil;
 import kr.meet42.reservationservice.web.dto.ReservationResponseDto;
 import kr.meet42.reservationservice.web.dto.ReservationSaveRequestDto;
 import kr.meet42.reservationservice.web.dto.ReservationDeleteRequestDto;
+import kr.meet42.reservationservice.web.dto.ReservationSaveResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -39,6 +40,7 @@ public class ReservationService {
     @Transactional
     public ResponseEntity<?> save(ReservationSaveRequestDto requestDto) {
         Reservation reservation;
+        ReservationSaveResponseDto reservationSaveResponseDto;
 
         if (isValid(requestDto)) {
             requestDto.setStatus(1L);
@@ -49,9 +51,15 @@ public class ReservationService {
                 memberRepository.save(member);
                 participateRepository.save(requestDto.toParticipateEntity(reservation, member));
             }
-            return new ResponseEntity<>(HttpStatus.OK); // 저장 성공
+            reservationSaveResponseDto = ReservationSaveResponseDto.builder()
+                    .success(true)
+                    .build();
+            return new ResponseEntity<>(reservationSaveResponseDto, HttpStatus.OK); // 저장 성공
         }
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND); // 저장 실패
+        reservationSaveResponseDto = ReservationSaveResponseDto.builder()
+                .success(false)
+                .build();
+        return new ResponseEntity<>(reservationSaveResponseDto, HttpStatus.OK); // 저장 실패
     }
 
     @Transactional // Question: 여기서 Transactional이 필요한가? 그냥 조횐데?

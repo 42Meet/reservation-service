@@ -1,6 +1,6 @@
 # Reservation-Service
 
-### 🕹 실행 방법
+## 🕹 실행 방법
 
 1. Gradle을 활용한 빌드 및 패키징
 
@@ -31,7 +31,7 @@
 
 <br/>
 
-# API 명세 🗒
+## 🗒 API 명세 [swagger](http://42meet.kro.kr:8081/swagger-ui.html)
 
 |Method|URL|기능|파라미터|RequestBody|ResponseBody|
 |------|---|---|------|-----------|------------|
@@ -41,8 +41,26 @@
 |POST|/delete|삭제||[보기](https://github.com/42Meet/reservation-service/blob/main/mdfiles/delete.md)||
 |GET|/rooms|전체 회의실 정보 가져오기|||[보기](https://github.com/42Meet/reservation-service/blob/main/mdfiles/roomsResponse.md)|
 
-# DB 구조
+## 📕 디렉토리 구조
+
+```
+📁reservation-service
+└── 📁src
+    └──  📁main
+         ├── 📁java
+         │    ├── 📁config
+         │    ├── 📁controller
+         │    ├── 📁domain
+         │    ├── 📁service
+         │    ├── 📁utils
+         │    └── 📁dto
+         └── 📁resources
+```
+
+
+## 🛢 DB 구조
 ![image](https://user-images.githubusercontent.com/43032377/122879335-be292780-d373-11eb-8801-134b861ae65d.png)
 
-# Swagger
-[들어가기](http://42meet.kro.kr:8081/swagger-ui.html)
+## Author
+김태훈 nonalias
+백승호 sebaek42

@@ -49,9 +49,9 @@ public class ReservationService {
                 memberRepository.save(member);
                 participateRepository.save(requestDto.toParticipateEntity(reservation, member));
             }
-            return new ResponseEntity<>(HttpStatus.OK); // 저장 성공
+            return new ResponseEntity<>(HttpStatus.CREATED); // 저장 성공
         }
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND); // 저장 실패
+        return new ResponseEntity<>(HttpStatus.CONFLICT); // 저장 실패
     }
 
     @Transactional // Question: 여기서 Transactional이 필요한가? 그냥 조횐데?
@@ -151,7 +151,7 @@ public class ReservationService {
 //                .orElseThrow(() -> new IllegalArgumentException("해당 예약 내역이 없습니다. 예약id="+ dto.getId()));
         Optional<Reservation> finded = reservationRepository.findById(dto.getId());
         if (finded.isEmpty())
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         else {
             // TODO : JWT 연결 되면 주석 풀어서 leader만 삭제할 수 있도록 수정
 //            if (dto.getJwt() != finded.get().getLeaderName())

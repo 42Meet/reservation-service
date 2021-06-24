@@ -5,7 +5,9 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicUpdate;
+import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.*;
@@ -60,11 +62,16 @@ public class Reservation {
     @Column(name = "content", nullable = false)
     private String content;
 
-    @OneToMany(fetch = FetchType.EAGER)
-    private List<Participate> participate;
+    @Column(name = "created_at", nullable = false, updatable = false)
+    @CreationTimestamp
+    private java.util.Date createdAt;
+
+    @Column(name = "updated_at", nullable = false)
+    @UpdateTimestamp
+    private java.util.Date updatedAt;
 
     @Builder
-    public Reservation(String leaderName, String roomName, String location, Date date, Time startTime, Time endTime, String department, String purpose, String title, Long status, String content, List<Participate> participate) {
+    public Reservation(String leaderName, String roomName, String location, Date date, Time startTime, Time endTime, String department, String purpose, String title, Long status, String content) {
         this.leaderName = leaderName;
         this.roomName = roomName;
         this.location = location;
@@ -76,7 +83,6 @@ public class Reservation {
         this.title = title;
         this.status = status;
         this.content = content;
-        this.participate = participate;
     }
 
     public ReservationResponseDto toResponseDto(ArrayList<String> members) {

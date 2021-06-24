@@ -38,7 +38,8 @@ dependencies {
     implementation group: 'io.springfox', name: 'springfox-swagger-ui', version: '2.9.2'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
 
-
+    implementation "io.spring.gradle:dependency-management-plugin:1.0.4.RELEASE"
+    ext['hibernate.version'] = '5.2.11.Final'
 }
 
 test {

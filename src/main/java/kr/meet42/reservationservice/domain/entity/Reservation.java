@@ -19,12 +19,12 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+//@DynamicUpdate
 @Getter
 @Setter
 @NoArgsConstructor
 @Entity
-@DynamicUpdate
-public class Reservation {
+public class Reservation extends BaseTimeEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -62,13 +62,13 @@ public class Reservation {
     @Column(name = "content", nullable = false)
     private String content;
 
-    @Column(name = "created_at", nullable = false, updatable = false)
-    @CreationTimestamp
-    private java.util.Date createdAt;
-
-    @Column(name = "updated_at", nullable = false)
-    @UpdateTimestamp
-    private java.util.Date updatedAt;
+//    @Column(name = "created_at", nullable = false, updatable = false)
+//    @CreationTimestamp
+//    private java.util.Date createdAt;
+//
+//    @Column(name = "updated_at", nullable = false)
+//    @UpdateTimestamp
+//    private java.util.Date updatedAt;
 
     @Builder
     public Reservation(String leaderName, String roomName, String location, Date date, Time startTime, Time endTime, String department, String purpose, String title, Long status, String content) {

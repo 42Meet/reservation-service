@@ -8,7 +8,7 @@ spring:
     include: credential
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
   application:
     name: reservation-service
 

@@ -8,7 +8,7 @@ node {
 
     stage('Build image') {
 
-        app = docker.build("nonalias/reservation-service")
+        app = docker.build("nonalias/reservation-service:1.0")
     }
 
     stage('Test image') {

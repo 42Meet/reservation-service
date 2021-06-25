@@ -20,12 +20,10 @@ eureka:
       defaultZone: http://15.164.85.227:8761/eureka
 
 management:
-  endpoint:
   endpoints:
     web:
       exposure:
-        include: info, health
-
+        include: refresh,health,beans,httptrace,info,metrics,prometheus
 
 token:
   secret: sample

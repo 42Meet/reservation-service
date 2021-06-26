@@ -1,6 +1,7 @@
 package kr.meet42.reservationservice.service;
 
 import com.sun.xml.bind.v2.TODO;
+import kr.meet42.reservationservice.client.MemberServiceClient;
 import kr.meet42.reservationservice.domain.entity.Member;
 import kr.meet42.reservationservice.domain.entity.Participate;
 import kr.meet42.reservationservice.domain.entity.Reservation;
@@ -35,6 +36,7 @@ public class ReservationService {
     private final MemberRepository memberRepository;
     private final ParticipateRepository participateRepository;
     private final JWTUtil jwtUtil;
+    private final MemberServiceClient memberServiceClient;
 
     @Transactional
     public ResponseEntity<?> save(ReservationSaveRequestDto requestDto) {

@@ -9,11 +9,11 @@ import lombok.Setter;
 @NoArgsConstructor
 public class ReservationDeleteRequestDto {
     private Long id;
-    private String jwt;
+    private String accessToken;
 
     @Builder
-    public ReservationDeleteRequestDto(Long id, String jwt) {
+    public ReservationDeleteRequestDto(Long id, String accessToken) {
         this.id = id;
-        this.jwt = jwt;
+        this.accessToken = accessToken;
     }
 }

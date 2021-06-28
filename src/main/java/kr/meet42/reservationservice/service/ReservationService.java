@@ -1,6 +1,7 @@
 package kr.meet42.reservationservice.service;
 
 import com.sun.xml.bind.v2.TODO;
+import feign.Response;
 import kr.meet42.reservationservice.client.MemberServiceClient;
 import kr.meet42.reservationservice.domain.entity.Member;
 import kr.meet42.reservationservice.domain.entity.Participate;
@@ -14,6 +15,7 @@ import kr.meet42.reservationservice.web.dto.ReservationSaveRequestDto;
 import kr.meet42.reservationservice.web.dto.ReservationDeleteRequestDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
@@ -39,9 +41,11 @@ public class ReservationService {
     private final MemberServiceClient memberServiceClient;
 
     @Transactional
-    public ResponseEntity<?> save(ReservationSaveRequestDto requestDto) {
+    public ResponseEntity<?> save(ReservationSaveRequestDto requestDto, String accessToken) {
         Reservation reservation;
 
+        if (jwtUtil.validateAndExtract(accessToken).compareTo(requestDto.getLeaderName()) != 0)
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         if (isValid(requestDto)) {
             requestDto.setStatus(1L);
             reservation = reservationRepository.save(requestDto.toReservationEntity());
@@ -57,13 +61,12 @@ public class ReservationService {
     }
 
     @Transactional // Question: 여기서 Transactional이 필요한가? 그냥 조횐데?
-    public List<List<ReservationResponseDto>> findMyReservation(HttpServletRequest request) {
+    public ResponseEntity<List<List<ReservationResponseDto>>> findMyReservation(HttpServletRequest request, String accessToken) {
         List<List<ReservationResponseDto>> res = new ArrayList<>(new ArrayList<>());
         List<ReservationResponseDto> proc = new ArrayList<>();
         List<ReservationResponseDto> end = new ArrayList<>();
         List<ReservationResponseDto> sche = new ArrayList<>();
-//        String intra = "sebaek";
-        String intra = jwtUtil.validateAndExtract(request.getHeader("access_token"));
+        String intra = jwtUtil.validateAndExtract(accessToken);
         List<Member> members = memberRepository.findByIntra(intra);
         for (Iterator<Member> iter = members.iterator(); iter.hasNext();) {
             Member member = iter.next();
@@ -85,7 +88,7 @@ public class ReservationService {
         res.add(proc);
         res.add(sche);
         res.add(end);
-        return res;
+        return new ResponseEntity(res, HttpStatus.OK);
     }
 
     @org.springframework.transaction.annotation.Transactional
@@ -104,23 +107,6 @@ public class ReservationService {
         }
         else
             reservation.setStatus(1L);
-//        if (start.compareTo(Calendar.getInstance().getTime()) == 0) {
-//            // 시작시간이 현재시간보다 크다면
-//            if (target.getStartTime().compareTo(Calendar.getInstance().getTime()) > 0) {
-//                target.setStatus(2L);
-//            }
-//            // 사이에 있으면
-//            else if (target.getStartTime().compareTo(Calendar.getInstance().getTime()) < 0
-//                    && target.getEndTime().compareTo(Calendar.getInstance().getTime()) > 0)
-//                target.setStatus(1L);
-//            else
-//                target.setStatus(0L);
-//        }
-//        // 더 늦으면 즉, 예정되어있으면
-//        else if (target.getDate().compareTo(Calendar.getInstance().getTime()) > 0)
-//            target.setStatus(2L);
-//        else
-//            target.setStatus(0L);
     }
 
     private void listAscSort(List<ReservationResponseDto> list) {
@@ -156,8 +142,8 @@ public class ReservationService {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         else {
             // TODO : JWT 연결 되면 주석 풀어서 leader만 삭제할 수 있도록 수정
-//            if (dto.getJwt() != finded.get().getLeaderName())
-//                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            if (jwtUtil.validateAndExtract(dto.getAccessToken()).compareTo(finded.get().getLeaderName()) != 0)
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             List<Participate> parti = participateRepository.findByReservation(finded.get());
             for (Iterator<Participate> iter = parti.iterator(); iter.hasNext();) {
                 participateRepository.delete(iter.next());

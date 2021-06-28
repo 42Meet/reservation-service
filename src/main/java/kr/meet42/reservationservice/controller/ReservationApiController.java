@@ -33,8 +33,11 @@ public class ReservationApiController {
 
     @ApiOperation(value = "예약 생성", notes = "예약 생성")
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody ReservationSaveRequestDto requestDto) {
-        return reservationService.save(requestDto);
+    public ResponseEntity<?> register(@RequestBody ReservationSaveRequestDto requestDto, HttpServletRequest request) {
+        String accessToken = request.getHeader("access-token");
+        if (accessToken == null)
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        return reservationService.save(requestDto, accessToken);
     }
 
     @ApiOperation(value = "예약 현황 조회", notes = "예약 현황 조회")
@@ -49,15 +52,21 @@ public class ReservationApiController {
     @ApiOperation(value = "예약 삭제", notes = "예약 삭제")
     @PostMapping("/delete")
     public ResponseEntity<?> delete(@RequestBody ReservationDeleteRequestDto requestDto, HttpServletRequest request, HttpServletResponse response) {
-        String jwt = request.getHeader("jwt");
-        requestDto.setJwt(jwt);
+        String accessToken = request.getHeader("access-token");
+        if (accessToken == null)
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        requestDto.setAccessToken(accessToken);
         return reservationService.delete(requestDto);
     }
 
     @ApiOperation(value = "마이페이지", notes = "마이페이지")
     @GetMapping("/mypage")
-    public List<List<ReservationResponseDto>> myReservation(HttpServletRequest request, HttpServletResponse response) {
-        return reservationService.findMyReservation(request);
+    public ResponseEntity<List<List<ReservationResponseDto>>> myReservation(HttpServletRequest request, HttpServletResponse response) {
+        String accessToken = request.getHeader("access-token");
+        if (accessToken == null) {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+        return reservationService.findMyReservation(request, accessToken);
     }
 
     @ApiOperation(value = "회의실 명단 조회", notes = "회의실 명단 조회")

@@ -49,7 +49,9 @@ public class ReservationService {
         if (isValid(requestDto)) {
             requestDto.setStatus(1L);
             reservation = reservationRepository.save(requestDto.toReservationEntity());
-            requestDto.getMembers().add(requestDto.getLeaderName());
+            String leaderName = requestDto.getLeaderName();
+            if (!requestDto.getMembers().contains(leaderName))
+                requestDto.getMembers().add(leaderName);
             for (Iterator<String> iter = requestDto.getMembers().iterator(); iter.hasNext(); ) {
                 Member member = requestDto.toMemberEntity(iter.next());
                 memberRepository.save(member);

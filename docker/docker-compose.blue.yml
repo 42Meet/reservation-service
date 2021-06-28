@@ -1,0 +1,7 @@
+version: '2'
+
+services:
+  reservation:
+    image: nonalias/reservation-service:1.0
+    ports:
+      - "9000:8080"

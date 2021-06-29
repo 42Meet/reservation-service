@@ -56,7 +56,7 @@ public class Reservation extends BaseTimeEntity{
     @Column(name = "title", nullable = false)
     private String title;
 
-    @Column(name = "status", nullable = false)
+    @Column(name = "status", nullable = false) // 0이면 만료된, 1이면 진행중, 2이면 예약된 예약 + 3이면 승인대기중인 예약 추가고려중
     private Long status;
 
     @Column(name = "content", nullable = false)

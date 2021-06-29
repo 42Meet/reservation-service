@@ -23,6 +23,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
+import javax.persistence.criteria.CriteriaBuilder;
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 import java.sql.Date;
@@ -43,10 +44,11 @@ public class ReservationService {
     @Transactional
     public ResponseEntity<?> save(ReservationSaveRequestDto requestDto, String accessToken) {
         Reservation reservation;
+        Integer error_code = 0; // 0 이면 OK, 1이면 시간중복, 2이면 예약가능 횟수 초과
 
         if (jwtUtil.validateAndExtract(accessToken).compareTo(requestDto.getLeaderName()) != 0)
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        if (isValid(requestDto)) {
+        if (isValid(requestDto, error_code)) {
             requestDto.setStatus(1L);
             reservation = reservationRepository.save(requestDto.toReservationEntity());
             String leaderName = requestDto.getLeaderName();
@@ -59,7 +61,13 @@ public class ReservationService {
             }
             return new ResponseEntity<>(HttpStatus.CREATED); // 저장 성공
         }
-        return new ResponseEntity<>(HttpStatus.CONFLICT); // 저장 실패
+        System.out.println("error_code = " + error_code);
+        if (error_code == 1)
+            return new ResponseEntity<>(HttpStatus.CONFLICT); // 시간 중복으로 저장 실패
+        else if (error_code == 2)
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN); // 예약가능 횟수 초과로 저장실패
+        else
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST); // 이상한 경우임 Bad request..
     }
 
     @Transactional // Question: 여기서 Transactional이 필요한가? 그냥 조횐데?
@@ -192,7 +200,8 @@ public class ReservationService {
         return ret;
     }
 
-    public boolean isValid(ReservationSaveRequestDto requestDto) {
+    public boolean isValid(ReservationSaveRequestDto requestDto, Integer error_code) {
+        final int MAX_RESERVATION = 2;
         String room_name;
         Date date;
         Time start_time;
@@ -200,6 +209,7 @@ public class ReservationService {
         Reservation tmp;
         Time tmp_start;
         Time tmp_end;
+        int cnt;
 
         room_name = requestDto.getRoomName();
         date = Date.valueOf(requestDto.getDate());
@@ -207,18 +217,28 @@ public class ReservationService {
         end_time = Time.valueOf(requestDto.getEndTime());
         // TODO: db에 room_name, date 로 reservation 리스트 가져오고 start_time, end_time 비교 ...NoSqlDB적용고려
         List<Reservation> reservations =  reservationRepository.findByRoomNameAndDate(room_name, date);
-        if (start_time.compareTo(end_time) >= 0)
+        cnt = 0;
+        if (start_time.compareTo(end_time) >= 0){
+            error_code = 1;
             return false;
+        }
         for (Iterator<Reservation> iter = reservations.iterator(); iter.hasNext(); ) {
             tmp = iter.next();
             tmp_start = tmp.getStartTime();
             tmp_end = tmp.getEndTime();
-            if (end_time.compareTo(tmp_start) > 0 && end_time.compareTo(tmp_end) <= 0)
+            if (Objects.equals(tmp.getLeaderName(), requestDto.getLeaderName()) && tmp.getStatus() != 0) {
+                cnt = cnt + 1;
+                if (cnt == MAX_RESERVATION) {
+                    error_code = 2;
+                    return false;
+                }
+            }
+            if ((end_time.compareTo(tmp_start) > 0 && end_time.compareTo(tmp_end) <= 0)
+                    || (start_time.compareTo(tmp_end) < 0 && start_time.compareTo(tmp_start) >= 0)
+                    || (start_time.compareTo(tmp_start) >= 0 && end_time.compareTo(tmp_end) <= 0)) {
+                error_code = 1;
                 return false;
-            else if (start_time.compareTo(tmp_end) < 0 && start_time.compareTo(tmp_start) >= 0)
-                return false;
-            else if (start_time.compareTo(tmp_start) >= 0 && end_time.compareTo(tmp_end) <= 0)
-                return false;
+            }
         }
         return true;
     }

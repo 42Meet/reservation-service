@@ -80,4 +80,9 @@ public class ReservationApiController {
     public void init() {
         adminService.saveRoomList();
     }
+
+    @PostMapping("/approve")
+    public void approve() {
+
+    }
 }

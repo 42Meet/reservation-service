@@ -5,3 +5,8 @@ services:
     image: nonalias/reservation-service:1.0
     ports:
       - "9000:8080"
+
+networks:
+  default:
+    external:
+      name: 42meet

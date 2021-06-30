@@ -40,15 +40,13 @@ public class ReservationService {
     private final ParticipateRepository participateRepository;
     private final JWTUtil jwtUtil;
     private final MemberServiceClient memberServiceClient;
-
+    private Integer error_code = 0; // 0이면 ㄱㅊ, 1이면 중복, 2이면 예약가능 횟수 초과
     @Transactional
     public ResponseEntity<?> save(ReservationSaveRequestDto requestDto, String accessToken) {
         Reservation reservation;
-        Integer error_code = 0; // 0 이면 OK, 1이면 시간중복, 2이면 예약가능 횟수 초과
-
         if (jwtUtil.validateAndExtract(accessToken).compareTo(requestDto.getLeaderName()) != 0)
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        if (isValid(requestDto, error_code)) {
+        if (isTimeValid(requestDto) && isCntValid(requestDto)) {
             // TODO: 승인했으면 setStatus를 통해 적절한 값을 지정해 주어야 한다.
             // status를 일단 승인대기상태로
             requestDto.setStatus(3L);
@@ -69,13 +67,12 @@ public class ReservationService {
         else if (error_code == 2)
             return new ResponseEntity<>(HttpStatus.FORBIDDEN); // 예약가능 횟수 초과로 저장실패
         else
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST); // 이상한 경우임 Bad request..
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND); // 이상한 경우임 NOT_FOUND..
     }
 
     @Transactional // Question: 여기서 Transactional이 필요한가? 그냥 조횐데?
     public ResponseEntity<List<List<ReservationResponseDto>>> findMyReservation(HttpServletRequest request, String accessToken) {
         List<List<ReservationResponseDto>> res = new ArrayList<>(new ArrayList<>());
-
         List<ReservationResponseDto> proc = new ArrayList<>();
         List<ReservationResponseDto> end = new ArrayList<>();
         List<ReservationResponseDto> sche = new ArrayList<>();
@@ -214,8 +211,61 @@ public class ReservationService {
         return ret;
     }
 
-    public boolean isValid(ReservationSaveRequestDto requestDto, Integer error_code) {
+    public boolean isCntValid(ReservationSaveRequestDto requestDto){
         final int MAX_RESERVATION = 2;
+        String date = requestDto.getDate();
+        Date sunday;
+        Date saturday;
+        // TODO: date기준 일욜-월욜 찾아서 countbybetween쿼리 날리기. 1주당 예약이 MAX_RESERVATION이상이면 안됨
+        sunday = findDay(date, 1);
+        saturday = findDay(date, 7);
+        if (reservationRepository.countByLeaderNameAndDateBetween(requestDto.getLeaderName(), sunday, saturday) >= MAX_RESERVATION) {
+            if (error_code != 1)
+                error_code = 2;
+            return false;
+        }
+        return true;
+    }
+
+    // USAGE: 예약할 날짜, 찾고싶은 날짜의 요일 코드번호(일~토 순서로 1~7)
+    public Date findDay(String date, int wanted_day) {
+        java.text.SimpleDateFormat formatter = new java.text.SimpleDateFormat("yyyy-MM-dd");
+        String dateParts[] = date.split("-");
+        String dd = dateParts[2];
+        String MM = dateParts[1];
+        String yyyy = dateParts[0];
+
+        Calendar c = Calendar.getInstance();
+        c.set(Integer.parseInt(yyyy),Integer.parseInt(MM)-1,Integer.parseInt(dd));
+        int current_day = c.get(Calendar.DAY_OF_WEEK);
+        if (current_day != wanted_day) {
+            c.add(Calendar.DATE, wanted_day - current_day);
+        }
+        return Date.valueOf(formatter.format(c.getTime()));
+    }
+
+    public boolean checkDate(ReservationSaveRequestDto requestDto) {
+        String dateParts[] = requestDto.getDate().split("-");
+        String dd = dateParts[2];
+        String MM = dateParts[1];
+        String yyyy = dateParts[0];
+        java.text.SimpleDateFormat formatter = new java.text.SimpleDateFormat("yyyy-MM-dd");
+
+        Calendar base = Calendar.getInstance();
+        base.add(Calendar.DATE, 7);
+        Date start = Date.valueOf(formatter.format(base.getTime()));
+        Calendar selected_cal = Calendar.getInstance();
+        selected_cal.set(Integer.parseInt(yyyy),Integer.parseInt(MM)-1,Integer.parseInt(dd));
+        Date selected = Date.valueOf(formatter.format(selected_cal.getTime()));
+        base.add(Calendar.DATE, 13);
+        Date end = Date.valueOf(formatter.format(base.getTime()));
+        if ((start.compareTo(selected) > 0) || (end.compareTo(selected) < 0))
+            return false;
+        else
+            return true;
+    }
+
+    public boolean isTimeValid(ReservationSaveRequestDto requestDto) {
         String room_name;
         Date date;
         Time start_time;
@@ -223,7 +273,6 @@ public class ReservationService {
         Reservation tmp;
         Time tmp_start;
         Time tmp_end;
-        int cnt;
 
         room_name = requestDto.getRoomName();
         date = Date.valueOf(requestDto.getDate());
@@ -231,8 +280,7 @@ public class ReservationService {
         end_time = Time.valueOf(requestDto.getEndTime());
         // TODO: db에 room_name, date 로 reservation 리스트 가져오고 start_time, end_time 비교 ...NoSqlDB적용고려
         List<Reservation> reservations =  reservationRepository.findByRoomNameAndDate(room_name, date);
-        cnt = 0;
-        if (start_time.compareTo(end_time) >= 0){
+        if (start_time.compareTo(end_time) >= 0 || !checkDate(requestDto)){
             error_code = 1;
             return false;
         }
@@ -240,13 +288,6 @@ public class ReservationService {
             tmp = iter.next();
             tmp_start = tmp.getStartTime();
             tmp_end = tmp.getEndTime();
-            if (Objects.equals(tmp.getLeaderName(), requestDto.getLeaderName()) && tmp.getStatus() != 0) {
-                cnt = cnt + 1;
-                if (cnt == MAX_RESERVATION) {
-                    error_code = 2;
-                    return false;
-                }
-            }
             if ((end_time.compareTo(tmp_start) > 0 && end_time.compareTo(tmp_end) <= 0)
                     || (start_time.compareTo(tmp_end) < 0 && start_time.compareTo(tmp_start) >= 0)
                     || (start_time.compareTo(tmp_start) >= 0 && end_time.compareTo(tmp_end) <= 0)) {

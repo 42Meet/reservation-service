@@ -47,7 +47,9 @@ public class ReservationService {
         if (jwtUtil.validateAndExtract(accessToken).compareTo(requestDto.getLeaderName()) != 0)
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         if (isTimeValid(requestDto) && isCntValid(requestDto)) {
-            requestDto.setStatus(1L);
+            // TODO: 승인했으면 setStatus를 통해 적절한 값을 지정해 주어야 한다.
+            // status를 일단 승인대기상태로
+            requestDto.setStatus(3L);
             reservation = reservationRepository.save(requestDto.toReservationEntity());
             String leaderName = requestDto.getLeaderName();
             if (!requestDto.getMembers().contains(leaderName))
@@ -74,38 +76,48 @@ public class ReservationService {
         List<ReservationResponseDto> proc = new ArrayList<>();
         List<ReservationResponseDto> end = new ArrayList<>();
         List<ReservationResponseDto> sche = new ArrayList<>();
+        List<ReservationResponseDto> wait = new ArrayList<>();
 
         String intra = jwtUtil.validateAndExtract(accessToken);
         List<Member> members = memberRepository.findByIntra(intra);
         for (Iterator<Member> iter = members.iterator(); iter.hasNext();) {
             Member member = iter.next();
             Participate participate = participateRepository.findByMember(member);
-            setReservationStatus(participate);
-            Optional<Reservation> procReservation = reservationRepository.findByIdAndStatus(participate.getReservation().getId(), 1L);
-            if (procReservation.isPresent())
-                proc.add(procReservation.get().toResponseDto(getMembers(procReservation.get())));
-            Optional<Reservation> endReservation = reservationRepository.findByIdAndStatus(participate.getReservation().getId(), 0L);
-            if (endReservation.isPresent())
-                end.add(endReservation.get().toResponseDto(getMembers(endReservation.get())));
-            Optional<Reservation> scheReservation = reservationRepository.findByIdAndStatus(participate.getReservation().getId(), 2L);
-            if (scheReservation.isPresent())
-                sche.add(scheReservation.get().toResponseDto(getMembers(scheReservation.get())));
+            Reservation reservation = participate.getReservation();
+            setReservationStatus(reservation, intra);
+            Optional<Reservation> expected = reservationRepository.findById(reservation.getId());
+            if (expected.isPresent()) {
+                Long status = expected.get().getStatus();
+                if (status == 1L)
+                    proc.add(expected.get().toResponseDto(getMembers(expected.get())));
+                else if (status == 2L)
+                    sche.add(expected.get().toResponseDto(getMembers(expected.get())));
+                else if (status == 0L)
+                    end.add(expected.get().toResponseDto(getMembers(expected.get())));
+                else if (status == 3L)
+                    wait.add(expected.get().toResponseDto(getMembers(expected.get())));
+            }
         }
         listAscSort(proc);
         listAscSort(sche);
         listDescSort(end);
+        listAscSort(wait);
         res.add(proc);
         res.add(sche);
         res.add(end);
+        res.add(wait);
         return new ResponseEntity(res, HttpStatus.OK);
     }
 
     @org.springframework.transaction.annotation.Transactional
-    public void setReservationStatus(Participate participate) {
-        Reservation reservation = participate.getReservation();
+    public void setReservationStatus(Reservation reservation, String intra) {
         java.util.Date start = new java.util.Date(reservation.getDate().getYear(), reservation.getDate().getMonth(), reservation.getDate().getDate(), reservation.getStartTime().getHours(), 0, 0);
         java.util.Date end = new java.util.Date(reservation.getDate().getYear(), reservation.getDate().getMonth(), reservation.getDate().getDate(), reservation.getEndTime().getHours(), 0, 0);
         java.util.Date cur = Calendar.getInstance().getTime();
+        String role = memberServiceClient.getRole(intra);
+        // 예약 대기이면서 동시에 ADMIN이 아니라면 종료
+        if (reservation.getStatus() == 3L && role != "ROLE_ADMIN")
+            return ;
         // 예약시간이 더 클경우. 즉, 예정일경우
         if (start.compareTo(cur) > 0) {
             reservation.setStatus(2L);

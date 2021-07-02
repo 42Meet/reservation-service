@@ -9,7 +9,10 @@ import kr.meet42.reservationservice.web.dto.ReservationResponseDto;
 import kr.meet42.reservationservice.web.dto.ReservationSaveRequestDto;
 import kr.meet42.reservationservice.web.dto.ReservationDeleteRequestDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
+import org.springframework.data.web.SortDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.awt.print.Pageable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -68,6 +72,20 @@ public class ReservationApiController {
         }
         return reservationService.findMyReservation(request, accessToken);
     }
+
+    @ApiOperation(value = "승인 대기중인 나의 예약", notes = "승인 대기중인 나의 예약")
+    @GetMapping("/mypage/waiting")
+    public ResponseEntity<Page<Reservation>> myWaitingReservation(HttpServletRequest request, @SortDefault.SortDefaults({
+            @SortDefault(sort = "createdDate", direction = Sort.Direction.ASC)
+    }) Pageable pageable) {
+        String accessToken = request.getHeader("access-token");
+        if (accessToken == null) {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+        return reservationService.findMyWaitingReservation(request, pageable, accessToken);
+    }
+
+
 
     @ApiOperation(value = "회의실 명단 조회", notes = "회의실 명단 조회")
     @GetMapping("/rooms")

@@ -16,6 +16,8 @@ import kr.meet42.reservationservice.web.dto.ReservationResponseDto;
 import kr.meet42.reservationservice.web.dto.ReservationSaveRequestDto;
 import kr.meet42.reservationservice.web.dto.ReservationDeleteRequestDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
@@ -28,6 +30,7 @@ import javax.persistence.EntityTransaction;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
+import java.awt.print.Pageable;
 import java.sql.Date;
 import java.util.*;
 import java.sql.Time;
@@ -116,6 +119,30 @@ public class ReservationService {
         res.add(wait);
         return new ResponseEntity(res, HttpStatus.OK);
     }
+
+    @Transactional
+    public ResponseEntity<Page<Reservation>> findMyWaitingReservation(HttpServletRequest request, Pageable pageable, String accessToken) {
+        List<Reservation> wait = new ArrayList<>();
+
+        String intra = jwtUtil.validateAndExtract(accessToken);
+        List<Member> members = memberRepository.findByIntra(intra);
+        for (Iterator<Member> iter = members.iterator(); iter.hasNext();) {
+            Member member = iter.next();
+            Participate participate = participateRepository.findByMember(member);
+            Reservation reservation = participate.getReservation();
+            setReservationStatus(reservation, intra);
+            Optional<Reservation> expected = reservationRepository.findById(reservation.getId());
+            if (expected.isPresent()) {
+                Long status = expected.get().getStatus();
+                if (status == 3L)
+                    wait.add(expected.get());
+            }
+        }
+        final Page<Reservation> page = new PageImpl<>(wait);
+        return new ResponseEntity(page, HttpStatus.OK);
+    }
+
+
 
     @org.springframework.transaction.annotation.Transactional
     public void setReservationStatus(Reservation reservation, String intra) {

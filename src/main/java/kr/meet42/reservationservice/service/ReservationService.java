@@ -117,6 +117,27 @@ public class ReservationService {
         return new ResponseEntity(res, HttpStatus.OK);
     }
 
+    @Transactional // Question: 여기서 Transactional이 필요한가? 그냥 조횐데?
+    public ResponseEntity<List<ReservationResponseDto>> findMyReservationByStatus(HttpServletRequest request, Long myStatus, String accessToken) {
+        List<ReservationResponseDto> result = new ArrayList<>();
+
+        String intra = jwtUtil.validateAndExtract(accessToken);
+        List<Member> members = memberRepository.findByIntra(intra);
+        for (Member member : members) {
+            Participate participate = participateRepository.findByMember(member);
+            Reservation reservation = participate.getReservation();
+            setReservationStatus(reservation, intra);
+            Optional<Reservation> expected = reservationRepository.findById(reservation.getId());
+            if (expected.isPresent()) {
+                Long status = expected.get().getStatus();
+                if (status == myStatus)
+                    result.add(expected.get().toResponseDto(getMembers(expected.get())));
+            }
+        }
+        listAscSort(result);
+        return new ResponseEntity(result, HttpStatus.OK);
+    }
+
     @org.springframework.transaction.annotation.Transactional
     public void setReservationStatus(Reservation reservation) {
         java.util.Date start = new java.util.Date(reservation.getDate().getYear(), reservation.getDate().getMonth(), reservation.getDate().getDate(), reservation.getStartTime().getHours(), 0, 0);

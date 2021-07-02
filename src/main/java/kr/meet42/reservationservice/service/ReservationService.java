@@ -123,9 +123,6 @@ public class ReservationService {
         java.util.Date end = new java.util.Date(reservation.getDate().getYear(), reservation.getDate().getMonth(), reservation.getDate().getDate(), reservation.getEndTime().getHours(), 0, 0);
         java.util.Date cur = Calendar.getInstance().getTime();
         String role = memberServiceClient.getRole(intra);
-        // 예약 대기이면서 동시에 ADMIN이 아니라면 종료
-        if (reservation.getStatus() == 3L && role != "ROLE_ADMIN")
-            return ;
         // 예약시간이 더 클경우. 즉, 예정일경우
         if (start.compareTo(cur) > 0) {
             reservation.setStatus(2L);
@@ -199,13 +196,10 @@ public class ReservationService {
         return new ArrayList<ReservationResponseDto>();
     }
 
-    private List<ReservationResponseDto> getReservationResponseDtos(List<Reservation> res) {
-        List<ReservationResponseDto> dtos = new ArrayList<>();
-        for (Iterator<Reservation> iter = res.iterator(); iter.hasNext();) {
-            Reservation cur = iter.next();
-            dtos.add(cur.toResponseDto(getMembers(cur)));
-        }
-        return dtos;
+    public List<ReservationResponseDto> getReservationResponseDtos(List<Reservation> resRaw) {
+        List<ReservationResponseDto> res = new ArrayList<>();
+        resRaw.iterator().forEachRemaining(reservation -> {res.add(reservation.toResponseDto(getMembers(reservation)));});
+        return res;
     }
 
     public ArrayList<String> getMembers(Reservation reservation) {

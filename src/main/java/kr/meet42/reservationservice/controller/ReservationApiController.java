@@ -81,8 +81,4 @@ public class ReservationApiController {
         adminService.saveRoomList();
     }
 
-    @PostMapping("/approve")
-    public void approve() {
-
-    }
 }

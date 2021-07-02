@@ -29,3 +29,10 @@ management:
 
 token:
   secret: sample
+
+42meet:
+  server:
+    host: http://42meet.kro.kr
+    login: http://42meet.kro.kr/login
+    redirect: http://42meet.kro.kr/booking
+    test: http://localhost:3000

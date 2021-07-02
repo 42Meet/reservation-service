@@ -17,25 +17,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
-// @RequestMapping("/admin")  TODO : 어노테이션 커스터마이징 -> @42MeetAdmin (requestMapping("admin") 이랑 Admin인지 확인하는 로직까지)
+@RequestMapping("/admin")  // TODO : 어노테이션 커스터마이징 -> @42MeetAdmin (requestMapping("admin") 이랑 Admin인지 확인하는 로직까지)
 @RequiredArgsConstructor
 @RestController
 public class AdminApiController {
     private final ReservationService reservationService;
     private final AdminService adminService;
 
-    @ApiOperation(value = "승인 대기 조회", notes = "승인 대기 조회")
-    @GetMapping("/waitings")
-    public ResponseEntity<List<ReservationResponseDto>> getWaitings(HttpServletRequest request, HttpServletResponse response) {
-        // 운영진만 조회 가능
-        String accessToken = request.getHeader("access-token");
-        if (accessToken == null) {
-            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-        }
-        return adminService.findAllWaitings(accessToken);
-    }
-
-    @ApiOperation(value = "승인 반려 결정", notes = "승인 반려 결정")
+    @ApiOperation(value = "(Admin)승인 반려 결정", notes = "(Admin)승인 반려 결정")
     @PostMapping("/decide")
     public ResponseEntity<?> decide(@RequestBody AdminDecideRequestDto dto, HttpServletRequest request, HttpServletResponse response) {
         String accessToken = request.getHeader("access-token");
@@ -44,5 +33,56 @@ public class AdminApiController {
         }
         dto.setAccessToken(accessToken);
         return adminService.decideApproveOrReject(dto);
+    }
+
+    @ApiOperation(value = "(Admin)진행, 예정, 만료, 승인대기 조회", notes = "(Admin)진행, 예정, 만료, 승인대기 조회")
+    @GetMapping("")
+    public ResponseEntity<List<List<ReservationResponseDto>>> getAll(HttpServletRequest request, HttpServletResponse response) {
+        String accessToken = request.getHeader("access-token");
+        if (accessToken == null) {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+        return adminService.findAllReservation(accessToken);
+    }
+
+    @ApiOperation(value = "(Admin)진행 중인 예약 조회", notes = "(Admin)진행 중인 예약 조회")
+    @GetMapping("/progress")
+    public ResponseEntity<List<ReservationResponseDto>> getProgress(HttpServletRequest request, HttpServletResponse response) {
+        String accessToken = request.getHeader("access-token");
+        if (accessToken == null) {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+        return adminService.findReservationByStatus(accessToken, 1L);
+    }
+
+    @ApiOperation(value = "(Admin)예정된 예약 조회", notes = "(Admin)예정된 예약 조회")
+    @GetMapping("/scheduled")
+    public ResponseEntity<List<ReservationResponseDto>> getScheduled(HttpServletRequest request, HttpServletResponse response) {
+        String accessToken = request.getHeader("access-token");
+        if (accessToken == null) {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+        return adminService.findReservationByStatus(accessToken, 2L);
+    }
+
+    @ApiOperation(value = "(Admin)만료된 예약 조회", notes = "(Admin)만료된 예약 조회")
+    @GetMapping("/expired")
+    public ResponseEntity<List<ReservationResponseDto>> getExpired(HttpServletRequest request, HttpServletResponse response) {
+        String accessToken = request.getHeader("access-token");
+        if (accessToken == null) {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+        return adminService.findReservationByStatus(accessToken, 0L);
+    }
+
+    @ApiOperation(value = "(Admin)승인 대기 조회", notes = "(Admin)승인 대기 조회")
+    @GetMapping("/waiting")
+    public ResponseEntity<List<ReservationResponseDto>> getWaiting(HttpServletRequest request, HttpServletResponse response) {
+        // 운영진만 조회 가능
+        String accessToken = request.getHeader("access-token");
+        if (accessToken == null) {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+        return adminService.findReservationByStatus(accessToken, 3L);
     }
 }

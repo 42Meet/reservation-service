@@ -92,7 +92,7 @@ public class ReservationService {
             Member member = iter.next();
             Participate participate = participateRepository.findByMember(member);
             Reservation reservation = participate.getReservation();
-            setReservationStatus(reservation, intra);
+            setReservationStatus(reservation);
             Optional<Reservation> expected = reservationRepository.findById(reservation.getId());
             if (expected.isPresent()) {
                 Long status = expected.get().getStatus();
@@ -118,11 +118,10 @@ public class ReservationService {
     }
 
     @org.springframework.transaction.annotation.Transactional
-    public void setReservationStatus(Reservation reservation, String intra) {
+    public void setReservationStatus(Reservation reservation) {
         java.util.Date start = new java.util.Date(reservation.getDate().getYear(), reservation.getDate().getMonth(), reservation.getDate().getDate(), reservation.getStartTime().getHours(), 0, 0);
         java.util.Date end = new java.util.Date(reservation.getDate().getYear(), reservation.getDate().getMonth(), reservation.getDate().getDate(), reservation.getEndTime().getHours(), 0, 0);
         java.util.Date cur = Calendar.getInstance().getTime();
-        String role = memberServiceClient.getRole(intra);
         // 예약시간이 더 클경우. 즉, 예정일경우
         if (start.compareTo(cur) > 0) {
             reservation.setStatus(2L);

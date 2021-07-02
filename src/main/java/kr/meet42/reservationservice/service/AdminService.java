@@ -79,23 +79,21 @@ public class AdminService {
                 .build());
     }
 
-    public ResponseEntity<List<ReservationResponseDto>> findAllWaitings(String accessToken) {
-        String intra = jwtUtil.validateAndExtract(accessToken);
-        String role = memberServiceClient.getRole(intra);
-        if (!role.equals("ROLE_ADMIN"))
+    public ResponseEntity<List<List<ReservationResponseDto>>> findAllReservation(String accessToken) {
+        if (!isAdmin(accessToken))
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-        List<Reservation> resRaw = reservationRepository.findAllByStatusOrderByDateAsc(3L);
-        List<ReservationResponseDto> res = reservationService.getReservationResponseDtos(resRaw);
+        List<List<ReservationResponseDto>> res = new ArrayList<>();
+        res.add(findReservationByStatus(accessToken, 1L).getBody());
+        res.add(findReservationByStatus(accessToken, 2L).getBody());
+        res.add(findReservationByStatus(accessToken, 0L).getBody());
+        res.add(findReservationByStatus(accessToken, 3L).getBody());
         return new ResponseEntity<>(res, HttpStatus.OK);
     }
 
     @Transactional
     public ResponseEntity<?> decideApproveOrReject(AdminDecideRequestDto dto) {
-        String accessToken = dto.getAccessToken();
-        String intra = jwtUtil.validateAndExtract(accessToken);
-        String role = memberServiceClient.getRole(intra);
         // ADMIN이 아니거나 ids와 results의 개수가 같지 않으면 BAD REQUEST
-        if (!role.equals("ROLE_ADMIN") || dto.getResult().isEmpty() || dto.getId().isEmpty())
+        if (!isAdmin(dto.getAccessToken()) || dto.getResult().isEmpty() || dto.getId().isEmpty())
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         Long id = dto.getId().get();
         Optional<Reservation> finded = reservationRepository.findById(id);
@@ -117,5 +115,28 @@ public class AdminService {
         // 거절시 Rejected
         else
             reservation.setStatus(4L);
+    }
+
+    @Transactional
+    public ResponseEntity<List<ReservationResponseDto>> findReservationByStatus(String accessToken, Long status) {
+        if (!isAdmin(accessToken))
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        setAllStatus();
+        List<Reservation> finded = reservationRepository.findByStatus(status);
+        return new ResponseEntity<>(reservationService.getReservationResponseDtos(finded), HttpStatus.OK);
+    }
+
+    public boolean isAdmin(String accessToken) {
+        String intra = jwtUtil.validateAndExtract(accessToken);
+        String role = memberServiceClient.getRole(intra);
+        return role.equals("ROLE_ADMIN");
+    }
+
+    @Transactional
+    public void setAllStatus() {
+        List<Reservation> list = reservationRepository.findByStatusIsNot(0L);
+        list.iterator().forEachRemaining(reservation -> {
+            reservationService.setReservationStatus(reservation);
+        });
     }
 }

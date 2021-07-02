@@ -6,9 +6,11 @@ import kr.meet42.reservationservice.client.MemberServiceClient;
 import kr.meet42.reservationservice.domain.entity.Member;
 import kr.meet42.reservationservice.domain.entity.Participate;
 import kr.meet42.reservationservice.domain.entity.Reservation;
+import kr.meet42.reservationservice.domain.entity.Room;
 import kr.meet42.reservationservice.domain.repository.MemberRepository;
 import kr.meet42.reservationservice.domain.repository.ParticipateRepository;
 import kr.meet42.reservationservice.domain.repository.ReservationRepository;
+import kr.meet42.reservationservice.domain.repository.RoomRepository;
 import kr.meet42.reservationservice.utils.JWTUtil;
 import kr.meet42.reservationservice.web.dto.ReservationResponseDto;
 import kr.meet42.reservationservice.web.dto.ReservationSaveRequestDto;
@@ -38,12 +40,18 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final MemberRepository memberRepository;
     private final ParticipateRepository participateRepository;
+    private final RoomRepository roomRepository;
     private final JWTUtil jwtUtil;
     private final MemberServiceClient memberServiceClient;
     private Integer error_code = 0; // 0이면 ㄱㅊ, 1이면 중복, 2이면 예약가능 횟수 초과
+
     @Transactional
     public ResponseEntity<?> save(ReservationSaveRequestDto requestDto, String accessToken) {
         Reservation reservation;
+
+        Optional<Room> room = roomRepository.findByLocationAndRoomName(requestDto.getLocation(), requestDto.getRoomName());
+        if (!room.isPresent())
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
         if (jwtUtil.validateAndExtract(accessToken).compareTo(requestDto.getLeaderName()) != 0)
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         if (isTimeValid(requestDto) && isCntValid(requestDto)) {

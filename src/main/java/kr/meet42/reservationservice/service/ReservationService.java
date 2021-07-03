@@ -12,6 +12,7 @@ import kr.meet42.reservationservice.domain.repository.ParticipateRepository;
 import kr.meet42.reservationservice.domain.repository.ReservationRepository;
 import kr.meet42.reservationservice.domain.repository.RoomRepository;
 import kr.meet42.reservationservice.utils.JWTUtil;
+import kr.meet42.reservationservice.web.dto.ReservationPageResponseDto;
 import kr.meet42.reservationservice.web.dto.ReservationResponseDto;
 import kr.meet42.reservationservice.web.dto.ReservationSaveRequestDto;
 import kr.meet42.reservationservice.web.dto.ReservationDeleteRequestDto;
@@ -142,6 +143,29 @@ public class ReservationService {
 //        return new ResponseEntity(page, HttpStatus.OK);
 //    }
 
+//    @Transactional
+//    public ResponseEntity<Page<ReservationResponseDto>> pageMyReservationByStatus(HttpServletRequest request, Pageable pageable, Long myStatus, String accessToken) {
+//        List<ReservationResponseDto> result = new ArrayList<>();
+//
+//        String intra = jwtUtil.validateAndExtract(accessToken);
+//        List<Member> members = memberRepository.findByIntra(intra);
+//        for (Member member : members) {
+//            Participate participate = participateRepository.findByMember(member);
+//            Reservation reservation = participate.getReservation();
+//            setReservationStatus(reservation);
+//            Optional<Reservation> expected = reservationRepository.findById(reservation.getId());
+//            if (expected.isPresent()) {
+//                Long status = expected.get().getStatus();
+//                if (status == myStatus)
+//                    result.add(expected.get().toResponseDto(getMembers(expected.get())));
+//            }
+//        }
+//        listAscSort(result);
+//
+//        final Page<ReservationResponseDto> page = new PageImpl<>(result);
+//        return new ResponseEntity(page, HttpStatus.OK);
+//    }
+
 
     @Transactional // Question: 여기서 Transactional이 필요한가? 그냥 조횐데?
     public ResponseEntity<List<ReservationResponseDto>> findMyReservationByStatus(HttpServletRequest request, Long myStatus, String accessToken) {
@@ -163,6 +187,50 @@ public class ReservationService {
         listAscSort(result);
         return new ResponseEntity(result, HttpStatus.OK);
     }
+
+    @Transactional // Question: 여기서 Transactional이 필요한가? 그냥 조횐데?
+    public ResponseEntity<ReservationPageResponseDto> pageMyReservationByStatus(int currentPage, int pageBlock, HttpServletRequest request, Long myStatus, String accessToken) {
+        List<ReservationResponseDto> result = new ArrayList<>();
+        List<ReservationResponseDto> shown = new ArrayList<>();
+        ReservationPageResponseDto reservationPageResponseDto;
+        String intra = jwtUtil.validateAndExtract(accessToken);
+        List<Member> members = memberRepository.findByIntra(intra);
+        for (Member member : members) {
+            Participate participate = participateRepository.findByMember(member);
+            Reservation reservation = participate.getReservation();
+            setReservationStatus(reservation);
+            Optional<Reservation> expected = reservationRepository.findById(reservation.getId());
+            if (expected.isPresent()) {
+                Long status = expected.get().getStatus();
+                if (status == myStatus)
+                    result.add(expected.get().toResponseDto(getMembers(expected.get())));
+            }
+        }
+        if (myStatus == 1L || myStatus == 2L)
+            listAscSort(result);
+        else if (myStatus == 0L)
+            listDescSort(result);
+        // 100개있다고 쳐, 2번째 페이지 보고싶대. 한페이지당 10개야
+        // 총페이지수 = 전체 개수 / 10
+        // 시작글: (2-1) * 10 이고, 끝글: (2) * 10 - 1
+        int len = result.size();
+        if (pageBlock < 1)
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        int maxPage = len / pageBlock + 1;
+        if (currentPage < 1 || currentPage > maxPage)
+            return new ResponseEntity(HttpStatus.NO_CONTENT);
+        if ((currentPage * pageBlock) > len)
+            shown = result.subList((currentPage-1) * pageBlock, len);
+        else
+            shown = result.subList((currentPage-1) * pageBlock, currentPage * pageBlock);
+        reservationPageResponseDto = ReservationPageResponseDto.builder()
+                .currentPage(currentPage)
+                .maxPage(maxPage)
+                .reservationResponseDtos(shown)
+                .build();
+        return new ResponseEntity(reservationPageResponseDto, HttpStatus.OK);
+    }
+
 
     @org.springframework.transaction.annotation.Transactional
     public void setReservationStatus(Reservation reservation) {
@@ -241,6 +309,7 @@ public class ReservationService {
         }
         return new ArrayList<ReservationResponseDto>();
     }
+
 
     public List<ReservationResponseDto> getReservationResponseDtos(List<Reservation> resRaw) {
         List<ReservationResponseDto> res = new ArrayList<>();

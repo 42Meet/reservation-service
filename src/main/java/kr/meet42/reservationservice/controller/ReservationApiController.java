@@ -6,8 +6,7 @@ import kr.meet42.reservationservice.service.AdminService;
 import kr.meet42.reservationservice.service.ReservationService;
 import kr.meet42.reservationservice.web.dto.*;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Sort;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.data.web.SortDefault;
 import org.springframework.http.HttpStatus;
@@ -24,6 +23,7 @@ import java.util.Map;
 
 @RequiredArgsConstructor
 @RestController
+@Slf4j
 public class ReservationApiController {
 
     private final ReservationService reservationService;
@@ -119,6 +119,7 @@ public class ReservationApiController {
     @GetMapping("/rooms")
     public List<AdminListUpRequestDto> listUp(HttpServletRequest request, HttpServletResponse response) {
 //        adminService.saveRoomList();
+        log.info("access /rooms");
         return adminService.findAllRooms();
     }
 

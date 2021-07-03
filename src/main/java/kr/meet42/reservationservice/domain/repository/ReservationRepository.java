@@ -2,6 +2,7 @@ package kr.meet42.reservationservice.domain.repository;
 
 import kr.meet42.reservationservice.domain.entity.Participate;
 import kr.meet42.reservationservice.domain.entity.Reservation;
+import kr.meet42.reservationservice.web.dto.ReservationResponseDto;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -20,6 +21,9 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
     List<Reservation> findByDateOrderByStartTimeAsc(Date date);
     List<Reservation> findByRoomNameAndDate(String roomName, Date date);
     Optional<Reservation> findByIdAndStatus(Long id, Long status);
+    List<Reservation> findAllByStatusOrderByDateAsc(Long status);
+    List<Reservation> findByStatus(Long status);
+    List<Reservation> findByStatusIsNot(Long Status);
 
 
     long countByLeaderNameAndDateBetween(String leaderName, Date start, Date end);

@@ -126,7 +126,7 @@ public class ReservationService {
         for (Member member : members) {
             Participate participate = participateRepository.findByMember(member);
             Reservation reservation = participate.getReservation();
-            setReservationStatus(reservation, intra);
+            setReservationStatus(reservation);
             Optional<Reservation> expected = reservationRepository.findById(reservation.getId());
             if (expected.isPresent()) {
                 Long status = expected.get().getStatus();

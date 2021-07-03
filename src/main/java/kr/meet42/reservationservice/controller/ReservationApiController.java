@@ -74,7 +74,7 @@ public class ReservationApiController {
 //    }) Pageable pageable) {
     @ApiOperation(value = "예약 대기중인 예약내역", notes = "예약 대기중인 예약내역")
     @GetMapping("/mypage/waiting")
-    public ResponseEntity<ReservationPageResponseDto> myWaitingReservation(@RequestParam("currentPage") int currentPage, @RequestParam("pageBlock") int pageBlock, HttpServletRequest request, HttpServletResponse response) {
+    public ResponseEntity<ReservationPageResponseDto> myWaitingReservation(@RequestParam(value = "currentPage", defaultValue = "1") int currentPage, @RequestParam(value = "pageBlock", defaultValue = "5") int pageBlock, HttpServletRequest request, HttpServletResponse response) {
         String accessToken = request.getHeader("access-token");
         if (accessToken == null) {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
@@ -85,7 +85,7 @@ public class ReservationApiController {
 
     @ApiOperation(value = "진행중인 예약내역", notes = "진행중인 예약내역")
     @GetMapping("/mypage/progress")
-    public ResponseEntity<ReservationPageResponseDto> myProgressReservation(@RequestParam("currentPage") int currentPage, @RequestParam("pageBlock") int pageBlock, HttpServletRequest request, HttpServletResponse response) {
+    public ResponseEntity<ReservationPageResponseDto> myProgressReservation(@RequestParam(value = "currentPage", defaultValue = "1") int currentPage, @RequestParam(value = "pageBlock", defaultValue = "5") int pageBlock, HttpServletRequest request, HttpServletResponse response) {
         String accessToken = request.getHeader("access-token");
         if (accessToken == null) {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
@@ -95,7 +95,7 @@ public class ReservationApiController {
 
     @ApiOperation(value = "예정된 예약내역", notes = "예정된 예약내역")
     @GetMapping("/mypage/scheduled")
-    public ResponseEntity<ReservationPageResponseDto> myScheduledReservation(@RequestParam("currentPage") int currentPage, @RequestParam("pageBlock") int pageBlock, HttpServletRequest request, HttpServletResponse response) {
+    public ResponseEntity<ReservationPageResponseDto> myScheduledReservation(@RequestParam(value = "currentPage", defaultValue = "1") int currentPage, @RequestParam(value = "pageBlock", defaultValue = "5") int pageBlock, HttpServletRequest request, HttpServletResponse response) {
         String accessToken = request.getHeader("access-token");
         if (accessToken == null) {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
@@ -105,7 +105,7 @@ public class ReservationApiController {
 
     @ApiOperation(value = "만료된 예약내역", notes = "만료된 예약내역")
     @GetMapping("/mypage/expired")
-    public ResponseEntity<ReservationPageResponseDto> myExpiredReservation(@RequestParam("currentPage") int currentPage, @RequestParam("pageBlock") int pageBlock, HttpServletRequest request, HttpServletResponse response) {
+    public ResponseEntity<ReservationPageResponseDto> myExpiredReservation(@RequestParam(value = "currentPage", defaultValue = "1") int currentPage, @RequestParam(value = "pageBlock", defaultValue = "5") int pageBlock, HttpServletRequest request, HttpServletResponse response) {
         String accessToken = request.getHeader("access-token");
         if (accessToken == null) {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);

@@ -19,6 +19,9 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addMapping("/**")
                 .allowCredentials(true)
                 .allowedOrigins(env.getProperty("42meet.server.test"))
-                .allowedMethods("GET, POST, OPTIONS");
+                .allowedMethods("*")
+                .exposedHeaders("refresh-token", "access-token")
+                .maxAge(3600L);
     }
+
 }

@@ -228,8 +228,8 @@ public class ReservationService {
                 return new ResponseEntity(HttpStatus.NO_CONTENT);
         }
         else
-        if (currentPage < 1 || currentPage > maxPage)
-            return new ResponseEntity(HttpStatus.NO_CONTENT);
+            if (currentPage < 1 || currentPage > maxPage)
+                return new ResponseEntity(HttpStatus.NO_CONTENT);
         if ((currentPage * pageBlock) > len)
             shown = result.subList((currentPage-1) * pageBlock, len);
         else

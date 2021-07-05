@@ -146,6 +146,12 @@ public class AdminService {
             shown = dtos.subList((currentPage-1) * pageBlock, len);
         else
             shown = dtos.subList((currentPage-1) * pageBlock, currentPage * pageBlock);
+        if (len % pageBlock != 0)
+            maxPage = len / pageBlock + 1;
+        else if (len / pageBlock == 0)
+            maxPage = 0;
+        else
+            maxPage = len / pageBlock;
         reservationPageResponseDto = ReservationPageResponseDto.builder()
                 .currentPage(currentPage)
                 .maxPage(maxPage)

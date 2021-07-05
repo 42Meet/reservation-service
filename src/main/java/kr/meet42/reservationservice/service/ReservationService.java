@@ -329,7 +329,7 @@ public class ReservationService {
     }
 
     public boolean isCntValid(ReservationSaveRequestDto requestDto){
-        final int MAX_RESERVATION = 2;
+        final int MAX_RESERVATION = 100;
         String date = requestDto.getDate();
         Date sunday;
         Date saturday;

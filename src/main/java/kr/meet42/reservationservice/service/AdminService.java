@@ -7,10 +7,7 @@ import kr.meet42.reservationservice.domain.entity.Room;
 import kr.meet42.reservationservice.domain.repository.ReservationRepository;
 import kr.meet42.reservationservice.domain.repository.RoomRepository;
 import kr.meet42.reservationservice.utils.JWTUtil;
-import kr.meet42.reservationservice.web.dto.AdminDecideRequestDto;
-import kr.meet42.reservationservice.web.dto.AdminListUpRequestDto;
-import kr.meet42.reservationservice.web.dto.ReservationDeleteRequestDto;
-import kr.meet42.reservationservice.web.dto.ReservationResponseDto;
+import kr.meet42.reservationservice.web.dto.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -124,6 +121,61 @@ public class AdminService {
         setAllStatus();
         List<Reservation> finded = reservationRepository.findByStatus(status);
         return new ResponseEntity<>(reservationService.getReservationResponseDtos(finded), HttpStatus.OK);
+    }
+
+    @Transactional
+    public ResponseEntity<ReservationPageResponseDto> pageReservationByStatus(int currentPage, int pageBlock, String accessToken, Long status) {
+        if (!isAdmin(accessToken))
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        setAllStatus();
+        List<Reservation> finded = reservationRepository.findByStatus(status);
+        List<ReservationResponseDto> dtos = reservationService.getReservationResponseDtos(finded);
+        List<ReservationResponseDto> shown;
+        ReservationPageResponseDto reservationPageResponseDto;
+        if (status == 1L || status == 2L)
+            listAscSort(dtos);
+        else if (status == 0L)
+            listDescSort(dtos);
+        int len = dtos.size();
+        if (pageBlock < 1)
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        int maxPage = len / pageBlock + 1;
+        if (currentPage < 1 || currentPage > maxPage)
+            return new ResponseEntity(HttpStatus.NO_CONTENT);
+        if ((currentPage * pageBlock) > len)
+            shown = dtos.subList((currentPage-1) * pageBlock, len);
+        else
+            shown = dtos.subList((currentPage-1) * pageBlock, currentPage * pageBlock);
+        reservationPageResponseDto = ReservationPageResponseDto.builder()
+                .currentPage(currentPage)
+                .maxPage(maxPage)
+                .reservationResponseDtos(shown)
+                .build();
+        return new ResponseEntity<>(reservationPageResponseDto, HttpStatus.OK);
+    }
+
+    private void listAscSort(List<ReservationResponseDto> list) {
+        Collections.sort(list, new Comparator<ReservationResponseDto>() {
+            @Override
+            public int compare(ReservationResponseDto b1, ReservationResponseDto b2) {
+                if (b1.getDate().compareTo(b2.getDate()) == 0) {
+                    return b1.getStartTime().compareTo(b2.getStartTime());
+                } else
+                    return b1.getDate().compareTo(b2.getDate());
+            }
+        });
+    }
+
+    private void listDescSort(List<ReservationResponseDto> list) {
+        Collections.sort(list, new Comparator<ReservationResponseDto>() {
+            @Override
+            public int compare(ReservationResponseDto b1, ReservationResponseDto b2) {
+                if (b1.getDate().compareTo(b2.getDate()) == 0) {
+                    return b2.getStartTime().compareTo(b1.getStartTime());
+                } else
+                    return b2.getDate().compareTo(b1.getDate());
+            }
+        });
     }
 
     public boolean isAdmin(String accessToken) {

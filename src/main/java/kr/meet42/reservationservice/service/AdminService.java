@@ -9,6 +9,9 @@ import kr.meet42.reservationservice.domain.repository.RoomRepository;
 import kr.meet42.reservationservice.utils.JWTUtil;
 import kr.meet42.reservationservice.web.dto.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -127,19 +130,24 @@ public class AdminService {
     public ResponseEntity<ReservationPageResponseDto> pageReservationByStatus(int currentPage, int pageBlock, String accessToken, Long status) {
         if (!isAdmin(accessToken))
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-        setAllStatus();
-        List<Reservation> finded = reservationRepository.findByStatus(status);
-        List<ReservationResponseDto> dtos = reservationService.getReservationResponseDtos(finded);
-        List<ReservationResponseDto> shown;
-        ReservationPageResponseDto reservationPageResponseDto;
-        if (status == 1L || status == 2L)
-            listAscSort(dtos);
-        else if (status == 0L)
-            listDescSort(dtos);
-        int len = dtos.size();
-        if (pageBlock < 1)
+        if (pageBlock < 1 || currentPage < 1)
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        int maxPage;
+        setAllStatus();
+        Page<Reservation> pageFound;
+        List<Reservation> found;
+        Pageable pageable = PageRequest.of(currentPage - 1, pageBlock);
+        if (status == 1L || status == 2L)
+            pageFound = reservationRepository.findByStatusOrderByDateAscStartTimeAsc(status, pageable);
+        else if (status == 0L)
+            pageFound = reservationRepository.findByStatusOrderByDateDescStartTimeDesc(status, pageable);
+        else
+            pageFound = reservationRepository.findByStatus(status, pageable);
+        found = pageFound.getContent();
+        List<ReservationResponseDto> dtos = reservationService.getReservationResponseDtos(found);
+        // List<ReservationResponseDto> shown;
+        ReservationPageResponseDto reservationPageResponseDto;
+        int len = reservationRepository.countByStatus(status);
+        int maxPage = 0;
         if (len % pageBlock != 0)
             maxPage = len / pageBlock + 1;
         else if (len / pageBlock == 0)
@@ -153,14 +161,14 @@ public class AdminService {
         else
             if (currentPage < 1 || currentPage > maxPage)
                 return new ResponseEntity(HttpStatus.NO_CONTENT);
-        if ((currentPage * pageBlock) > len)
-            shown = dtos.subList((currentPage-1) * pageBlock, len);
-        else
-            shown = dtos.subList((currentPage-1) * pageBlock, currentPage * pageBlock);
+//        if ((currentPage * pageBlock) > len)
+//            shown = dtos.subList((currentPage-1) * pageBlock, len);
+//        else
+//            shown = dtos.subList((currentPage-1) * pageBlock, currentPage * pageBlock);
         reservationPageResponseDto = ReservationPageResponseDto.builder()
                 .currentPage(currentPage)
                 .maxPage(maxPage)
-                .reservationResponseDtos(shown)
+                .reservationResponseDtos(dtos)
                 .build();
         return new ResponseEntity<>(reservationPageResponseDto, HttpStatus.OK);
     }

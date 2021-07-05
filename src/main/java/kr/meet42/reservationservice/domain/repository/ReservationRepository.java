@@ -3,6 +3,8 @@ package kr.meet42.reservationservice.domain.repository;
 import kr.meet42.reservationservice.domain.entity.Participate;
 import kr.meet42.reservationservice.domain.entity.Reservation;
 import kr.meet42.reservationservice.web.dto.ReservationResponseDto;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -25,6 +27,10 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
     List<Reservation> findByStatus(Long status);
     List<Reservation> findByStatusIsNot(Long Status);
 
-
+    Page<Reservation> findByStatus(Long status, Pageable pageable);
+    Page<Reservation> findByStatusOrderByDateAscStartTimeAsc(Long status, Pageable pageable);
+    Page<Reservation> findByStatusOrderByDateDescStartTimeDesc(Long status, Pageable pageable);
+    int countByStatus(Long status);
     long countByLeaderNameAndDateBetween(String leaderName, Date start, Date end);
+
 }

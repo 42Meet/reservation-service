@@ -18,7 +18,7 @@ public class WebConfig implements WebMvcConfigurer {
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
                 .allowCredentials(true)
-                .allowedOrigins(env.getProperty("42meet.server.test"))
+                .allowedOrigins(env.getProperty("42meet.server.test"), env.getProperty("42meet.server.host"))
                 .allowedMethods("*")
                 .exposedHeaders("refresh-token", "access-token")
                 .maxAge(3600L);

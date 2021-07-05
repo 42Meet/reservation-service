@@ -139,9 +139,20 @@ public class AdminService {
         int len = dtos.size();
         if (pageBlock < 1)
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        int maxPage = len / pageBlock + 1;
-        if (currentPage < 1 || currentPage > maxPage)
-            return new ResponseEntity(HttpStatus.NO_CONTENT);
+        int maxPage;
+        if (len % pageBlock != 0)
+            maxPage = len / pageBlock + 1;
+        else if (len / pageBlock == 0)
+            maxPage = 0;
+        else
+            maxPage = len / pageBlock;
+        if (maxPage == 0) {
+            if (currentPage < 1 || currentPage > (maxPage + 1))
+                return new ResponseEntity(HttpStatus.NO_CONTENT);
+        }
+        else
+            if (currentPage < 1 || currentPage > maxPage)
+                return new ResponseEntity(HttpStatus.NO_CONTENT);
         if ((currentPage * pageBlock) > len)
             shown = dtos.subList((currentPage-1) * pageBlock, len);
         else

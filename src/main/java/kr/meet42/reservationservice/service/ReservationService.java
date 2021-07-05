@@ -216,13 +216,18 @@ public class ReservationService {
         int len = result.size();
         if (pageBlock < 1)
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        int maxPage = 0;
+        int maxPage;
         if (len % pageBlock != 0)
             maxPage = len / pageBlock + 1;
         else if (len / pageBlock == 0)
             maxPage = 0;
         else
             maxPage = len / pageBlock;
+        if (maxPage == 0) {
+            if (currentPage < 1 || currentPage > (maxPage + 1))
+                return new ResponseEntity(HttpStatus.NO_CONTENT);
+        }
+        else
         if (currentPage < 1 || currentPage > maxPage)
             return new ResponseEntity(HttpStatus.NO_CONTENT);
         if ((currentPage * pageBlock) > len)
@@ -243,6 +248,8 @@ public class ReservationService {
         java.util.Date start = new java.util.Date(reservation.getDate().getYear(), reservation.getDate().getMonth(), reservation.getDate().getDate(), reservation.getStartTime().getHours(), 0, 0);
         java.util.Date end = new java.util.Date(reservation.getDate().getYear(), reservation.getDate().getMonth(), reservation.getDate().getDate(), reservation.getEndTime().getHours(), 0, 0);
         java.util.Date cur = Calendar.getInstance().getTime();
+        if (reservation.getStatus() == 3L)
+            return ;
         // 예약시간이 더 클경우. 즉, 예정일경우
         if (start.compareTo(cur) > 0) {
             reservation.setStatus(2L);
@@ -335,7 +342,7 @@ public class ReservationService {
     }
 
     public boolean isCntValid(ReservationSaveRequestDto requestDto){
-        final int MAX_RESERVATION = 2;
+        final int MAX_RESERVATION = 100;
         String date = requestDto.getDate();
         Date sunday;
         Date saturday;

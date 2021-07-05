@@ -216,7 +216,11 @@ public class ReservationService {
         int len = result.size();
         if (pageBlock < 1)
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        int maxPage = len / pageBlock + 1;
+        int maxPage = 0;
+        if (len % pageBlock == 0)
+            maxPage = len / pageBlock;
+        else
+            maxPage = len / pageBlock + 1;
         if (currentPage < 1 || currentPage > maxPage)
             return new ResponseEntity(HttpStatus.NO_CONTENT);
         if ((currentPage * pageBlock) > len)

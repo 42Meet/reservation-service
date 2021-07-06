@@ -23,14 +23,20 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
     List<Reservation> findByDateAndStatusIsNotOrderByStartTimeAsc(Date date, Long status);
     List<Reservation> findByRoomNameAndDate(String roomName, Date date);
     Optional<Reservation> findByIdAndStatus(Long id, Long status);
+
     List<Reservation> findAllByStatusOrderByDateAsc(Long status);
+
     List<Reservation> findByStatus(Long status);
+
     List<Reservation> findByStatusIsNot(Long Status);
 
     Page<Reservation> findByStatus(Long status, Pageable pageable);
-    Page<Reservation> findByStatusOrderByDateAscStartTimeAsc(Long status, Pageable pageable);
-    Page<Reservation> findByStatusOrderByDateDescStartTimeDesc(Long status, Pageable pageable);
-    int countByStatus(Long status);
-    long countByLeaderNameAndDateBetween(String leaderName, Date start, Date end);
 
+    Page<Reservation> findByStatusOrderByDateAscStartTimeAsc(Long status, Pageable pageable);
+
+    Page<Reservation> findByStatusOrderByDateDescStartTimeDesc(Long status, Pageable pageable);
+
+    int countByStatus(Long status);
+
+    long countByLeaderNameAndDateBetweenAndStatusIsNot(String leaderName, Date start, Date end, Long status);
 }

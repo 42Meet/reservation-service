@@ -349,7 +349,7 @@ public class ReservationService {
         // TODO: date기준 일욜-월욜 찾아서 countbybetween쿼리 날리기. 1주당 예약이 MAX_RESERVATION이상이면 안됨
         sunday = findDay(date, 1);
         saturday = findDay(date, 7);
-        if (reservationRepository.countByLeaderNameAndDateBetween(requestDto.getLeaderName(), sunday, saturday) >= MAX_RESERVATION) {
+        if (reservationRepository.countByLeaderNameAndDateBetweenAndStatusIsNot(requestDto.getLeaderName(), sunday, saturday, 4L) >= MAX_RESERVATION) {
             if (error_code != 1)
                 error_code = 2;
             return false;
@@ -409,7 +409,7 @@ public class ReservationService {
         start_time = Time.valueOf(requestDto.getStartTime());
         end_time = Time.valueOf(requestDto.getEndTime());
         // TODO: db에 room_name, date 로 reservation 리스트 가져오고 start_time, end_time 비교 ...NoSqlDB적용고려
-        List<Reservation> reservations =  reservationRepository.findByRoomNameAndDate(room_name, date);
+        List<Reservation> reservations =  reservationRepository.findByRoomNameAndDateAndStatusIsNot(room_name, date, 4L);
         if (start_time.compareTo(end_time) >= 0 || !checkDate(requestDto)){
             error_code = 1;
             return false;

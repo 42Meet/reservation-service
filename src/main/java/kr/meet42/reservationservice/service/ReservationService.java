@@ -309,13 +309,13 @@ public class ReservationService {
     public List<ReservationResponseDto> findAllReservationByParam(Map<String, String> paramMap) {
         List<Reservation> res = new ArrayList<>();
         if (paramMap.containsKey("date") && paramMap.containsKey("roomName")) {
-            res = reservationRepository.findByDateAndRoomNameOrderByStartTimeAsc(Date.valueOf(paramMap.get("date")), paramMap.get("roomName"));
+            res = reservationRepository.findByDateAndRoomNameAndStatusIsNotOrderByStartTimeAsc(Date.valueOf(paramMap.get("date")), paramMap.get("roomName"), 4L);
         }
         else if (paramMap.containsKey("date") && paramMap.containsKey("location")) {
-            res = reservationRepository.findByDateAndLocationOrderByStartTimeAsc(Date.valueOf(paramMap.get("date")), paramMap.get("location"));
+            res = reservationRepository.findByDateAndLocationAndStatusIsNotOrderByStartTimeAsc(Date.valueOf(paramMap.get("date")), paramMap.get("location"), 4L);
         }
         else if (paramMap.containsKey("date")) {
-            res = reservationRepository.findByDateOrderByStartTimeAsc(Date.valueOf(paramMap.get("date")));
+            res = reservationRepository.findByDateAndStatusIsNotOrderByStartTimeAsc(Date.valueOf(paramMap.get("date")), 4L);
         }
         if (!res.isEmpty()) {
             return getReservationResponseDtos(res);

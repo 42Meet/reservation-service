@@ -77,7 +77,7 @@ public class ReservationService {
         if (error_code == 1)
             return new ResponseEntity<>(HttpStatus.CONFLICT); // 시간 중복으로 저장 실패
         else if (error_code == 2)
-            return new ResponseEntity<>(HttpStatus.FORBIDDEN); // 예약가능 횟수 초과로 저장실패
+            return new ResponseEntity<>(HttpStatus.REQUESTED_RANGE_NOT_SATISFIABLE); // 예약가능 횟수 초과로 저장실패
         else
             return new ResponseEntity<>(HttpStatus.NOT_FOUND); // 이상한 경우임 NOT_FOUND..
     }
@@ -309,13 +309,13 @@ public class ReservationService {
     public List<ReservationResponseDto> findAllReservationByParam(Map<String, String> paramMap) {
         List<Reservation> res = new ArrayList<>();
         if (paramMap.containsKey("date") && paramMap.containsKey("roomName")) {
-            res = reservationRepository.findByDateAndRoomNameOrderByStartTimeAsc(Date.valueOf(paramMap.get("date")), paramMap.get("roomName"));
+            res = reservationRepository.findByDateAndRoomNameAndStatusIsNotOrderByStartTimeAsc(Date.valueOf(paramMap.get("date")), paramMap.get("roomName"), 4L);
         }
         else if (paramMap.containsKey("date") && paramMap.containsKey("location")) {
-            res = reservationRepository.findByDateAndLocationOrderByStartTimeAsc(Date.valueOf(paramMap.get("date")), paramMap.get("location"));
+            res = reservationRepository.findByDateAndLocationAndStatusIsNotOrderByStartTimeAsc(Date.valueOf(paramMap.get("date")), paramMap.get("location"), 4L);
         }
         else if (paramMap.containsKey("date")) {
-            res = reservationRepository.findByDateOrderByStartTimeAsc(Date.valueOf(paramMap.get("date")));
+            res = reservationRepository.findByDateAndStatusIsNotOrderByStartTimeAsc(Date.valueOf(paramMap.get("date")), 4L);
         }
         if (!res.isEmpty()) {
             return getReservationResponseDtos(res);
@@ -349,7 +349,7 @@ public class ReservationService {
         // TODO: date기준 일욜-월욜 찾아서 countbybetween쿼리 날리기. 1주당 예약이 MAX_RESERVATION이상이면 안됨
         sunday = findDay(date, 1);
         saturday = findDay(date, 7);
-        if (reservationRepository.countByLeaderNameAndDateBetween(requestDto.getLeaderName(), sunday, saturday) >= MAX_RESERVATION) {
+        if (reservationRepository.countByLeaderNameAndDateBetweenAndStatusIsNot(requestDto.getLeaderName(), sunday, saturday, 4L) >= MAX_RESERVATION) {
             if (error_code != 1)
                 error_code = 2;
             return false;
@@ -409,7 +409,7 @@ public class ReservationService {
         start_time = Time.valueOf(requestDto.getStartTime());
         end_time = Time.valueOf(requestDto.getEndTime());
         // TODO: db에 room_name, date 로 reservation 리스트 가져오고 start_time, end_time 비교 ...NoSqlDB적용고려
-        List<Reservation> reservations =  reservationRepository.findByRoomNameAndDate(room_name, date);
+        List<Reservation> reservations =  reservationRepository.findByRoomNameAndDateAndStatusIsNot(room_name, date, 4L);
         if (start_time.compareTo(end_time) >= 0 || !checkDate(requestDto)){
             error_code = 1;
             return false;
